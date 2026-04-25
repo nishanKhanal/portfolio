@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self-Evaluation Letter — Nishan Khanal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f5f2eb;
+      --accent: #c0392b;
+      --accent2: #2c7a7b;
+      --muted: #6b6b6b;
+      --rule: #d4cfc6;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .page-bar {
+      background: var(--ink);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .page-bar a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,242,235,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .page-bar a:hover { color: var(--paper); }
+    .page-bar span {
+      color: rgba(245,242,235,0.2);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .letter-wrap {
+      max-width: 680px;
+      margin: 4rem auto;
+      padding: 0 2rem 6rem;
+    }
+
+    .letterhead {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .sender-block {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    .sender-block strong {
+      display: block;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.25rem;
+    }
+    .date-block {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+    .recipient-block {
+      font-size: 0.93rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    .subject-line {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.4rem 0.75rem;
+      border-left: 3px solid var(--accent);
+      margin-bottom: 0;
+    }
+
+    .letter-body p {
+      margin-bottom: 1.4rem;
+      font-size: 1rem;
+    }
+    .letter-body p:last-child { margin-bottom: 0; }
+
+    .goal-marker {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin: 2.5rem 0 0.5rem;
+    }
+
+    .signoff {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+    .signoff p {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .signature {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--ink);
+      margin-top: 1rem;
+      font-weight: 400;
+    }
+    .sig-details {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      line-height: 1.7;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .letter-wrap { animation: fadeIn 0.5s ease both; }
+  </style>
+</head>
+<body>
+
+<div class="page-bar">
+  <a href="index.html">← Portfolio</a>
+  <span>/</span>
+  <a href="#">Self-Evaluation Letter</a>
+</div>
+
+<div class="letter-wrap">
+
+  <div class="letterhead">
+    <div class="sender-block">
+      <strong>Nishan Khanal</strong>
+      726 Coit Avenue NE<br>
+      Grand Rapids, Michigan 49503<br>
+      616-349-0340<br>
+      khanalni@mail.gvsu.edu
+    </div>
+
+    <div class="date-block">April 26, 2026</div>
+
+    <div class="recipient-block">
+      John Appiah Kubi,<br>
+      Assistant Professor<br>
+      Grand Valley State University<br>
+      1 Campus Drive, Allendale, Michigan
+    </div>
+
+    <div class="subject-line">Re: Self-Evaluation — Response to my Letter of Commitment (January 23, 2026)</div>
+  </div>
+
+  <div class="letter-body">
+
+    <p>Dear Dr. Kubi,</p>
+
+    <p>In January, I wrote a Letter of Commitment outlining three learning goals for STA 631: to deepen my understanding of the assumptions underlying statistical models, to improve how I communicate statistical results to a general audience, and to maximize my engagement during class while balancing a demanding set of responsibilities. I am writing now to respond honestly to that letter — to evaluate how well I met those goals, where I fell short, and what I am taking forward.</p>
+
+    <div class="goal-marker">Goal 1 · Understanding modeling assumptions</div>
+
+    <p>My first goal was the one I felt most uncertain about in January. I described myself as comfortable implementing models but wanting to understand "what is going on behind the scenes" — particularly when assumptions are violated. Looking back at my work this semester, I think this is the goal I made the most genuine progress on.</p>
+
+    <p>The clearest evidence is in how I handled assumption violations across the homeworks. In Homework I, I checked the residual vs. fitted plot for the Boston dataset and identified a curved pattern and non-constant variance — and then, rather than ignoring it, I ran a Shapiro-Wilk test and formally concluded that the normality assumption was violated. I said the model should not be used as-is. That kind of honest reckoning with a model's limitations is exactly what I set out to practice. In Homework III, I identified that the predictors in my final backward-selection model had VIF values above 5 (displacement: 9.4, weight: 7.6), flagged the multicollinearity explicitly, and noted that coefficient interpretations should be treated with caution — even though all predictors were technically "significant." I did not hide inconvenient findings to make the model look better.</p>
+
+    <p>The most substantive test of this goal came in Project 2. When we fit a Poisson regression for school participation frequency, we computed the variance-to-mean ratio (12.2) and the Poisson deviance ratio (5.12 — far above 1). We knew that proceeding with Poisson would produce underestimated standard errors and spuriously significant p-values. So we moved to Negative Binomial regression, confirmed the improvement with a likelihood ratio test, and explained the overdispersion diagnosis clearly in our report. That decision came from understanding what the Poisson assumption actually commits us to — not from a checklist.</p>
+
+    <p>I did not fully achieve everything I set out to in January. My original plan included taking structured notes after each class focused on the intuition behind modeling choices. In practice, I was inconsistent about this. Weeks with heavy research or internship deadlines often came at the expense of that reflection time. But I believe the understanding is there in the work itself, even when the notes were not.</p>
+
+    <div class="goal-marker">Goal 2 · Communicating statistical results clearly</div>
+
+    <p>This goal was the one I described most vividly in January. I wrote that "even strong results can lose their value if not explained clearly" — a belief that grew from watching good analyses go unread in professional settings because they were buried in jargon. I wanted to get better at describing results in simple language, acknowledging uncertainty, and choosing appropriate visualizations.</p>
+
+    <p>I can see the growth clearly when I compare my early and later writing. In Homework I, my coefficient interpretations were correct but terse: "the relationship between horsepower and mpg is negative as indicated by the negative slope." By the time I was writing for Project 1, the same type of finding read differently: "A jeweler equipped with a millimeter gauge and a table-angle tool — both non-contact instruments — could estimate any diamond's carat weight to within roughly 0.026 carats, without a scale." That is the same information — an RMSE — but expressed in terms of what it means for someone who works with diamonds.</p>
+
+    <p>The hardest communication challenge this semester was odds ratios. They are genuinely counterintuitive, and I spent a lot of time in Homework IV making sure I could translate them. Saying "the odds of being an always voter increases by a factor of 4.06 for a Democrat compared to someone with no party affiliation" is both accurate and, I think, accessible — it preserves the uncertainty implicit in odds language while giving the reader something they can grasp. The Information Visualization course I took concurrently helped here: I found myself applying principles from that class — choosing bar charts over tables for proportions, annotating figures clearly — to the statistical output I was generating in STA 631.</p>
+
+    <div class="goal-marker">Goal 3 · Maximizing in-class engagement</div>
+
+    <p>I want to be honest about this goal, because it is the one where my performance was most uneven. My plan in January was to ask questions as soon as doubts arose during class, rather than deferring them to later. This habit took root — particularly in the first half of the semester, I was more engaged in class than I have been in many graduate courses, and I noticed that the questions I asked (about reference levels in multinomial models, about when to use LDA vs. logistic regression) occasionally opened up broader discussions. That was genuinely satisfying.</p>
+
+    <p>But there were weeks — particularly in March, when two research project deadlines and an internship deliverable converged — where I came to class with less preparation than I wanted, and participated less as a result. I had anticipated that time management would be a challenge; I did not fully anticipate how it would affect the quality of my class engagement rather than just the quantity. Showing up is passive; engaging actively requires having done the thinking beforehand. That is a lesson I will carry into future courses.</p>
+
+    <div class="goal-marker">Looking forward</div>
+
+    <p>The habits this course helped me build — assumption checking before interpretation, honest diagnostics, plain-language communication of results — are ones I have already begun applying in my machine learning research role on campus. When I am evaluating a model now, I find myself asking questions I would not have thought to ask in December: What distributional assumption does this loss function imply? What does this confidence interval actually commit us to? What would this result mean to someone who did not fit the model?</p>
+
+    <p>I believe I earned a strong grade in this course. My individual homeworks demonstrate consistent engagement with the material, honest treatment of model limitations, and clear written interpretation. My contributions to both team projects — particularly the modeling decisions in Project 2 and the report writing in Project 1 — reflect genuine ownership of the work, not passive participation. Where I fell short of my own goals, I have tried to say so clearly in this letter rather than paper over it.</p>
+
+    <p>I am grateful for a course structure that made this kind of self-assessment feel meaningful rather than performative. The Letter of Commitment was a more useful anchor than I expected — reading it now, I can see both how much I anticipated correctly and what I underestimated about myself.</p>
+
+    <div class="signoff">
+      <p>Sincerely,</p>
+      <div class="signature">Nishan Khanal</div>
+      <div class="sig-details">
+        MS Data Science &amp; Analytics, GVSU<br>
+        Machine Learning Research Assistant<br>
+        April 26, 2026
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nishan Khanal — STA 631 Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f5f2eb;
+      --accent: #c0392b;
+      --accent2: #2c7a7b;
+      --muted: #6b6b6b;
+      --rule: #d4cfc6;
+      --code-bg: #e8e4db;
+      --highlight: #fef3c7;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 4rem 2rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      border: 40px solid rgba(192,57,43,0.15);
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 10%;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      border: 25px solid rgba(44,122,123,0.12);
+    }
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .header-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      font-weight: 400;
+    }
+    .header-sub {
+      font-size: 1rem;
+      color: rgba(245,242,235,0.65);
+      max-width: 560px;
+      font-weight: 300;
+    }
+    .header-meta {
+      margin-top: 2rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(245,242,235,0.5);
+    }
+    .meta-item strong {
+      display: block;
+      color: rgba(245,242,235,0.85);
+      font-size: 0.85rem;
+      margin-bottom: 0.15rem;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--ink);
+      border-top: 1px solid rgba(245,242,235,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .nav-inner a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245,242,235,0.5);
+      text-decoration: none;
+      padding: 0.85rem 1rem;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-inner a:hover {
+      color: var(--paper);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      padding: 2.5rem 0 3rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .intro p {
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+    .intro p + p { margin-top: 1rem; }
+
+    /* ── SECTION ── */
+    section {
+      padding: 3.5rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    section:last-child { border-bottom: none; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .obj-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-top: 0.2rem;
+    }
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 2rem 0 0.75rem;
+    }
+    p { margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── EVIDENCE CARD ── */
+    .evidence {
+      background: white;
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent2);
+      border-radius: 2px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .evidence-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+    }
+    .evidence p {
+      font-size: 0.93rem;
+      color: #3a3a3a;
+      margin: 0;
+    }
+    .evidence p + p { margin-top: 0.5rem; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+    }
+    .code-block code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #2d2d2d;
+      white-space: pre;
+    }
+    .code-comment { color: #888; }
+    .code-fn { color: #c0392b; }
+    .code-str { color: #2c7a7b; }
+    .code-kw { color: #6b3fa0; }
+
+    /* ── RESULT PILL ── */
+    .results-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.25rem 0;
+    }
+    .result-pill {
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 2px;
+      padding: 0.5rem 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .result-pill span {
+      display: block;
+      font-size: 0.65rem;
+      color: rgba(245,242,235,0.5);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.1rem;
+    }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: var(--highlight);
+      border: 1px solid #f0d060;
+      border-radius: 2px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.93rem;
+    }
+    .highlight-box strong { color: var(--accent); }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 1.25rem 0;
+    }
+    th {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: var(--code-bg);
+      border-bottom: 2px solid var(--rule);
+    }
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── PARTICIPATION ── */
+    .participation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .part-card {
+      background: white;
+      border: 1px solid var(--rule);
+      border-top: 3px solid var(--accent);
+      padding: 1rem;
+    }
+    .part-card h4 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .part-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ── LETTER LINK ── */
+    .letter-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      background: var(--ink);
+      color: var(--paper);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .letter-link:hover { background: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      color: rgba(245,242,235,0.4);
+      text-align: center;
+      padding: 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    section {
+      animation: fadeUp 0.5s ease both;
+    }
+    section:nth-child(1) { animation-delay: 0.05s; }
+    section:nth-child(2) { animation-delay: 0.1s; }
+    section:nth-child(3) { animation-delay: 0.15s; }
+    section:nth-child(4) { animation-delay: 0.2s; }
+    section:nth-child(5) { animation-delay: 0.25s; }
+    section:nth-child(6) { animation-delay: 0.3s; }
+    section:nth-child(7) { animation-delay: 0.35s; }
+
+    /* ── CHECKLIST ── */
+    .checklist {
+      list-style: none;
+      margin: 1rem 0;
+    }
+    .checklist li {
+      padding: 0.3rem 0;
+      font-size: 0.93rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+    }
+    .checklist li::before {
+      content: '✓';
+      color: var(--accent2);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    /* responsive */
+    @media (max-width: 600px) {
+      .header-meta { gap: 1rem; }
+      .results-row { gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="header-label">STA 631 · Statistical Modeling I · Winter 2026</div>
+    <h1>Nishan Khanal<br><em>Final Portfolio</em></h1>
+    <p class="header-sub">A demonstration of statistical modeling learning across five course objectives — grounded in homeworks, team projects, and the habits of mind developed along the way.</p>
+    <div class="header-meta">
+      <div class="meta-item"><strong>Institution</strong>Grand Valley State University</div>
+      <div class="meta-item"><strong>Instructor</strong>Dr. John Appiah Kubi</div>
+      <div class="meta-item"><strong>Submitted</strong>April 26, 2026</div>
+      <div class="meta-item"><strong>Program</strong>MS Data Science &amp; Analytics</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     NAV
+════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#intro">Overview</a>
+    <a href="#obj1">LO 1 · Probability</a>
+    <a href="#obj2">LO 2 · GLMs</a>
+    <a href="#obj3">LO 3 · Selection</a>
+    <a href="#obj4">LO 4 · Communication</a>
+    <a href="#obj5">LO 5 · Software</a>
+    <a href="#participation">Participation</a>
+    <a href="#letter">Self-Evaluation</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+════════════════════════════════════════════ -->
+<main>
+
+  <!-- INTRO -->
+  <section class="intro" id="intro">
+    <p>This portfolio presents evidence of my learning across the five course learning objectives of STA 631. Each section pairs a specific piece of my work — a homework, a project, or a modeling decision — with a discussion of how it demonstrates the objective. Where a single artifact meets multiple objectives, I note the overlap but discuss each objective on its own terms.</p>
+    <p>The two major projects were completed collaboratively with teammates Kabin Devkota, Shreya KC, and Udita Bista. The individual homeworks reflect my own analysis and writing. Code references below point to the Rmd source files; rendered outputs are the PDF/HTML submissions.</p>
+    <p>Required methods covered in this portfolio:</p>
+    <ul class="checklist">
+      <li>Multiple regression with quantitative and qualitative predictors (HW-II)</li>
+      <li>Polynomial regression (Project 1 — diamonds)</li>
+      <li>Multinomial logistic regression with multiple predictors (HW-IV &amp; Project 2)</li>
+      <li>Negative Binomial regression — motivated over Poisson after diagnosing overdispersion (Project 2)</li>
+      <li>Linear Discriminant Analysis (Project 2)</li>
+    </ul>
+  </section>
+
+  <!-- ── OBJECTIVE 1 ── -->
+  <section id="obj1">
+    <div class="section-header">
+      <div class="obj-number">Learning Objective 01</div>
+      <h2>Probability as a foundation of statistical modeling, including inference and maximum likelihood estimation</h2>
+    </div>
+
+    <p>Statistical modeling is not just curve-fitting — it is the act of making probability statements about the world given data. This objective asks whether I understand that foundation: what a p-value means, what a confidence interval commits us to, and how maximum likelihood connects a model's distributional assumptions to the estimates we compute.</p>
+
+    <h3>Show: Homework I — Inference from Simple Linear Regression</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-I.Rmd / Homework-I.pdf</div>
+      <p>In Question 1 (Auto dataset, <code>mpg ~ horsepower</code>), I used TidyModels to fit a simple linear regression and then carefully distinguished between a <strong>confidence interval</strong> and a <strong>prediction interval</strong> for horsepower = 98.</p>
+    </div>
+
+    <div class="code-block"><code><span class="code-comment"># 95% confidence interval for the MEAN mpg at horsepower=98</span>
+conf_int &lt;- predict(model_auto, new_data=test_auto_data, type=<span class="code-str">"conf_int"</span>)
+<span class="code-comment"># (.pred_lower=24.0, .pred_upper=25.0)</span>
+
+<span class="code-comment"># 95% prediction interval for a SINGLE car at horsepower=98</span>
+pred_int &lt;- predict(model_auto, new_data=test_auto_data, type=<span class="code-str">"pred_int"</span>)
+<span class="code-comment"># (.pred_lower=14.8, .pred_upper=34.1)</span></code></div>
+
+    <p>The distinction matters deeply. The confidence interval is narrow (24.0–25.0) because it captures our uncertainty about the <em>average</em> response — averaging over many cars reduces noise. The prediction interval is wide (14.8–34.1) because individual cars vary around that average. This is a direct consequence of how OLS partitions uncertainty: the confidence interval reflects only estimation error (the sampling distribution of β̂), while the prediction interval adds residual variance σ². I wrote this out explicitly in the homework as a probability statement — "We are 95% confident that the average mpg of cars with horsepower 98 falls between 23.97 and 24.96" — which is a commitment about a probability model, not just a number.</p>
+
+    <h3>Tell: Why this demonstrates the objective</h3>
+
+    <p>Maximum likelihood estimation underlies OLS when we assume normally distributed errors: the OLS estimates are exactly the MLEs of β under that model. Every p-value and confidence interval I computed in HW-I flows from this assumption — the t-statistics follow a t-distribution because of the normality assumption on ε. When I checked the Q-Q plot and found non-normality (the residuals deviated in the tails), I was effectively checking whether the probability model justifying our inference held. I concluded it did not, and said so explicitly. That willingness to reject the probabilistic foundation when the evidence demands it is, I think, the clearest evidence that I understand what probability is doing here — it is not decoration, it is the engine of inference.</p>
+
+    <div class="evidence">
+      <div class="evidence-label">Supporting evidence · Homework-I, Q2</div>
+      <p>In the bias-variance question (Q2), I explained why a cubic model has lower <em>training</em> RSS but higher expected <em>test</em> RSS when the true relationship is linear — reasoning entirely in terms of the bias-variance tradeoff, which is itself a statement about expectations under a probability model.</p>
+    </div>
+
+    <h3>Supporting: Project 1 — Coefficient Significance as Probabilistic Claims</h3>
+
+    <p>In the diamonds regression, all five coefficients of our final polynomial model were significant at p &lt; 0.001. Reporting significance is easy; understanding it means grasping that under H₀ (a coefficient is zero), the t-statistic follows a known distribution, and our observed value was so extreme we would expect it less than 0.1% of the time by chance alone. The large sample size (34,000+ training observations) also illustrated the central limit theorem in action — even mild non-normality in the residuals becomes tolerable because the sampling distribution of β̂ is approximately normal.</p>
+  </section>
+
+  <!-- ── OBJECTIVE 2 ── -->
+  <section id="obj2">
+    <div class="section-header">
+      <div class="obj-number">Learning Objective 02</div>
+      <h2>Apply the appropriate generalized linear model for a specific data context</h2>
+    </div>
+
+    <p>Choosing the right model is not about picking the most sophisticated option — it is about matching the model's assumptions to what the data actually are. This objective is best demonstrated through Project 2, where we faced three distinct outcome types and had to make principled choices for each.</p>
+
+    <h3>Show: Project 2 — Four Models, Four Justified Choices</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · project2_classification_k12.Rmd / project2_classification_k12.docx</div>
+      <p>Using the 2019 Parent and Family Involvement (PFI) Survey (15,374 K–12 students), we modeled two distinct outcomes: (1) how often parents participate in school activities (FSFREQ — a count), and (2) a child's grade category (Mostly A's / B's / C's / D's or below).</p>
+    </div>
+
+    <h3>The Poisson → Negative Binomial Decision</h3>
+
+    <p>FSFREQ is a non-negative integer count (0–99), which makes Poisson regression the natural starting point. But we did not stop there. Before interpreting any Poisson results, we checked the core assumption: that the variance equals the mean.</p>
+
+    <div class="results-row">
+      <div class="result-pill"><span>Mean (FSFREQ)</span>7.02</div>
+      <div class="result-pill"><span>Variance (FSFREQ)</span>85.4</div>
+      <div class="result-pill"><span>Variance/Mean ratio</span>12.2×</div>
+      <div class="result-pill"><span>Poisson deviance ratio</span>5.12</div>
+    </div>
+
+    <p>A ratio of 12.2 — far above the value of 1 that Poisson requires — is severe overdispersion. Fitting Poisson anyway would produce standard errors that are too small, making predictors look significant when they are not. We therefore fit a Negative Binomial model, which adds a dispersion parameter θ allowing variance to exceed the mean. A likelihood ratio test confirmed the NB model was significantly better (LR = 60.3, p &lt; 0.001), and the AIC improved by approximately 35,000 points. This is not a small tweak — it is the difference between valid and invalid inference.</p>
+
+    <div class="code-block"><code><span class="code-comment"># Overdispersion: Poisson residual deviance / df >> 1</span>
+<span class="code-comment"># Deviance = 62,904 | df = 12,281 | ratio = 5.12 → invalid</span>
+
+<span class="code-comment"># Negative Binomial: adds dispersion parameter θ</span>
+nb_spec &lt;- poisson_reg() |&gt;
+  set_engine(<span class="code-str">"glm.nb"</span>) |&gt;
+  set_mode(<span class="code-str">"regression"</span>)</code></div>
+
+    <h3>Logistic Regression for Binary High-Achiever Outcome</h3>
+
+    <p>For the binary outcome (high_achiever: Mostly A's vs. not), logistic regression was appropriate — it models log-odds as a linear combination of predictors, producing interpretable odds ratios. We confirmed no multicollinearity (all GVIF values &lt; 2) and validated on a held-out test set, achieving AUC = 0.743. Ten-fold cross-validation (CV AUC = 0.726) confirmed the result was not an artifact of the split.</p>
+
+    <h3>Multinomial Logistic Regression for Four Grade Categories</h3>
+
+    <p>When we expanded the outcome to all four grade categories, binary logistic regression was no longer appropriate — collapsing four unordered categories to two would discard information. Multinomial logistic regression fits K−1 = 3 simultaneous equations, each comparing one grade category to the baseline (Mostly A's). We also addressed class imbalance (6,051 A students vs. 194 D students, a 31:1 ratio) using <code>step_upsample()</code>, applied only to training data to avoid leaking test-set information.</p>
+
+    <h3>LDA as a Theoretically Distinct Approach</h3>
+
+    <p>We also applied Linear Discriminant Analysis (LDA) and Quadratic Discriminant Analysis (QDA) as a theoretically distinct classification approach. Where logistic regression models P(Y=k|X) directly, LDA models P(X|Y=k) and uses Bayes' theorem. Using five continuous predictors (school involvement score, home engagement score, income, family dinner frequency, and disability as a continuous proxy), LDA achieved AUC = 0.651 — substantially below logistic regression's 0.743. This gap was principled and expected: LDA could not use the categorical predictors (race, parent education, disability status) that drove logistic regression's performance.</p>
+
+    <div class="highlight-box">
+      <strong>Key insight:</strong> Choosing the right GLM means not just picking from a menu, but diagnosing when your first choice fails its own assumptions (Poisson → NB) and understanding why two valid methods can produce different results by design (logistic vs. LDA).
+    </div>
+
+    <h3>Supporting: Homework IV — Multinomial Logistic Regression (Nonvoters)</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-IV.Rmd / Homework-IV.pdf</div>
+      <p>Using the FiveThirtyEight nonvoters survey (5,836 respondents), I fit multinomial logistic regression for a three-level outcome: voter_category ∈ {rarely/never, sporadic, always}. I extended the class model by adding party identification as a predictor, compared models with and without it, and interpreted both log-odds and odds-ratio form coefficients.</p>
+    </div>
+
+    <p>Democrats had 4.06× higher odds of being an "always" voter vs. "rarely/never" compared to those identifying as "Other" (β = 1.401, the exponentiated coefficient e^1.401 ≈ 4.06), while Republicans showed 3.45× higher odds (β = 1.239). Adding party reduced the gender coefficient slightly (from −0.211 to −0.192), suggesting that some of the gender–voting relationship is mediated by party identity.</p>
+  </section>
+
+  <!-- ── OBJECTIVE 3 ── -->
+  <section id="obj3">
+    <div class="section-header">
+      <div class="obj-number">Learning Objective 03</div>
+      <h2>Demonstrate model selection given a set of candidate models</h2>
+    </div>
+
+    <p>Model selection is the process of choosing from a set of candidates in a way that is honest — that does not overfit to data we happen to have, and does not use the same data to both select and evaluate. I have demonstrated this in two very different ways: through exhaustive best-subset selection in Project 1, and through stepwise backward elimination in HW-III.</p>
+
+    <h3>Show: Project 1 — Best-Subset Selection with Held-Out Validation</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · project1_diamonds_linear_regression.Rmd</div>
+      <p>With 25 candidate predictors (raw dimensions x, y, z; their squares; table; depth; and dummy expansions of cut, color, clarity), we used exhaustive best-subset selection via <code>regsubsets()</code> to identify the best-fitting model of each size k = 1, …, 25.</p>
+    </div>
+
+    <p>The critical methodological decision was to <strong>not</strong> use training-set criteria alone. We implemented a three-way split:</p>
+
+    <div class="code-block"><code><span class="code-comment"># Three-way holdout — data leakage prevention</span>
+set.seed(42)
+diamonds_split &lt;- initial_split(diamonds_clean, prop = 0.80)
+train_val      &lt;- training(diamonds_split)   <span class="code-comment"># 80%</span>
+test_set       &lt;- testing(diamonds_split)    <span class="code-comment"># 20% — NEVER touched until end</span>
+
+val_split      &lt;- initial_split(train_val, prop = 0.80)
+train_set      &lt;- training(val_split)        <span class="code-comment"># 64% — model fitting</span>
+val_set        &lt;- testing(val_split)         <span class="code-comment"># 16% — model selection</span></code></div>
+
+    <p>We computed validation-set MSE for each of the 25 best models. It was minimized at <strong>k = 5 predictors</strong>: table, x, z, x², z². Every quality-grade variable (cut, color, clarity) was excluded at this optimal size — a finding that is substantively interesting (once dimensions are known, grade adds nothing to carat prediction) and methodologically trustworthy because it came from data the model never saw during fitting.</p>
+
+    <div class="results-row">
+      <div class="result-pill"><span>Best model size</span>5 predictors</div>
+      <div class="result-pill"><span>Test R²</span>0.997</div>
+      <div class="result-pill"><span>Test RMSE</span>0.026 carats</div>
+      <div class="result-pill"><span>Excluded</span>Cut, Color, Clarity</div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Why the spike matters:</strong> Validation MSE jumped sharply when moving from 7 to 8 predictors — adding the first categorical variable triggered multicollinearity (x, y, z are highly correlated) and destabilized coefficients. This is exactly the kind of insight that in-sample criteria like AIC/BIC can miss, and it required held-out validation to detect.
+    </div>
+
+    <h3>Supporting: Homework III — Manual Backward Elimination</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-III.Rmd / Homework-III.pdf</div>
+      <p>Starting from a full model of acceleration on all remaining Auto predictors, I manually removed the predictor with the highest p-value at each step, tracking adjusted R² at every stage.</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Removed</th><th>Adj. R²</th><th>Remaining Predictors</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>—</td><td>0.576</td><td>mpg, cylinders, displacement, horsepower, weight, year</td></tr>
+        <tr><td>2</td><td>cylinders (p=0.961)</td><td>0.577</td><td>mpg, displacement, horsepower, weight, year</td></tr>
+        <tr><td>3</td><td>mpg (p=0.289)</td><td>0.577</td><td>displacement, horsepower, weight, year</td></tr>
+        <tr><td>4</td><td>year (p=0.552)</td><td>0.578</td><td>displacement, horsepower, weight</td></tr>
+      </tbody>
+    </table>
+
+    <p>The final model achieved test R² = 0.722, showing it generalized well. I also checked VIF — displacement (9.4) and weight (7.6) exceeded 5, signaling residual multicollinearity — and noted explicitly that coefficient interpretations should be treated with caution because of it. This kind of honest self-appraisal after selection is part of good model selection practice.</p>
+
+    <h3>Supporting: Project 2 — Likelihood Ratio Tests for Model Comparison</h3>
+
+    <p>In Project 2, model selection used likelihood ratio tests rather than information criteria or validation MSE. For both the Negative Binomial model (full vs. reduced: LR = 60.3, p &lt; 0.001) and the logistic model (full vs. reduced: deviance reduction = 177.5, p &lt; 0.001), the full model was significantly preferred. AIC comparisons corroborated these decisions. This is a formally different selection strategy from best-subset or backward elimination, and demonstrates that I can apply the appropriate selection tool for the modeling context at hand.</p>
+  </section>
+
+  <!-- ── OBJECTIVE 4 ── -->
+  <section id="obj4">
+    <div class="section-header">
+      <div class="obj-number">Learning Objective 04</div>
+      <h2>Express the results of statistical models to a general audience</h2>
+    </div>
+
+    <p>Numbers from a model mean nothing until they are explained to someone who did not fit the model. This objective is about translating statistical outputs — coefficients, odds ratios, confidence intervals — into language that a non-statistician can act on. It was one of my explicit goals at the start of the semester, and I can trace my development through the work.</p>
+
+    <h3>Show: Project 1 Report — The Jeweler's Insight</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · project1_diamonds_linear_regression_report.pdf</div>
+      <p>The report opens with a research question a general audience can immediately grasp — can a jeweler estimate carat weight without a scale? — and ends with a practical implication that answers it directly.</p>
+    </div>
+
+    <p>The key communication move was translating a test R² of 0.997 and RMSE of 0.026 carats into something tangible: "A jeweler equipped with a millimeter gauge and a table-angle tool — both non-contact instruments — could estimate any diamond's carat weight to within roughly 0.026 carats, without a scale." This is the same number, but expressed in terms of what it means for a person who works with diamonds.</p>
+
+    <p>We also made the counterintuitive finding legible: quality grades (cut, color, clarity) — the features most buyers focus on — add no predictive power once physical dimensions are known. We explained <em>why</em>: large diamonds are hard to cut and clarity-grade perfectly, so high-quality grades tend to appear on smaller stones. This transforms a regression coefficient exclusion into a market insight.</p>
+
+    <h3>Show: Homework II — Coefficient Interpretations with Interaction Terms</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-II.Rmd / Homework-II.pdf</div>
+      <p>Interpreting a model with interaction terms (Price × ShelveLoc) requires care, because the "effect" of price on sales depends on which shelf location you are in. I wrote out three explicit sub-equations and then translated them into plain language.</p>
+    </div>
+
+    <p>For example, for the interaction coefficient β₇ (Price × ShelveLocMedium = +0.0063):</p>
+
+    <div class="evidence">
+      <div class="evidence-label">Plain-language interpretation (Homework-II)</div>
+      <p>"Keeping everything else constant, when carseats are placed on a medium quality shelf location as opposed to a bad shelf location, the sales volume decreases by (62 − 6) = 56 units for every unit increase in price."</p>
+    </div>
+
+    <p>This kind of "net effect" interpretation — combining main effects and interaction terms into a single actionable sentence — is what communication to a general audience requires. A retailer does not care about β₁ and β₇ individually; they want to know: if I raise the price by $1 on a medium shelf, what happens to sales?</p>
+
+    <h3>Show: Homework IV — Odds Ratio Communication</h3>
+
+    <p>Odds ratios are famously hard to communicate. In HW-IV, I translated the party coefficients into percentage-change language:</p>
+
+    <div class="evidence">
+      <div class="evidence-label">Plain-language interpretation (Homework-IV)</div>
+      <p>"The odds of being an 'always' voter (vs. 'rarely/never') increases by a factor of 4.06 (~406%) for a Democrat compared to someone who identifies with no major party, holding all other variables constant."</p>
+    </div>
+
+    <p>I also used the model comparison (with/without party) to tell a causal story: adding party reduced the gender coefficient from −0.211 to −0.192, suggesting "some of the association between gender and voting may be explained by party" — a mediation framing that is accessible without invoking formal mediation analysis.</p>
+
+    <h3>Tell: Growth Over the Semester</h3>
+
+    <p>My Letter of Commitment identified clear communication as a deliberate goal. Looking back, I can trace the growth. In HW-I, my interpretations were technically correct but mechanical ("The relationship is negative as indicated by the negative slope"). By Project 1, I was writing executive summaries with practical implications. By Project 2, I was explaining racial and ethnic disparities in parent participation with appropriate caution ("these disparities persist after controlling for income and parent education, suggesting structural factors beyond socioeconomic status"). The habit of pairing every model output with a plain-language sentence — which I set as a goal in January — has become automatic.</p>
+  </section>
+
+  <!-- ── OBJECTIVE 5 ── -->
+  <section id="obj5">
+    <div class="section-header">
+      <div class="obj-number">Learning Objective 05</div>
+      <h2>Use programming software to fit and assess statistical models</h2>
+    </div>
+
+    <p>TidyModels provides a unified interface for fitting, assessing, and comparing models across engines and families. This objective is about fluency with that interface — not just running code, but understanding the workflow and making deliberate implementation choices.</p>
+
+    <h3>Show: Homework II — The Full TidyModels Pipeline</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-II.Rmd / Homework-II.pdf</div>
+      <p>The Carseats analysis walks through the complete TidyModels workflow: specification → data splitting → fitting → coefficient extraction → model assessment → prediction on new data → diagnostic visualization.</p>
+    </div>
+
+    <div class="code-block"><code><span class="code-comment"># 1. Specification</span>
+lm_spec &lt;- <span class="code-fn">linear_reg</span>() |&gt;
+  <span class="code-fn">set_engine</span>(<span class="code-str">"lm"</span>) |&gt;
+  <span class="code-fn">set_mode</span>(<span class="code-str">"regression"</span>)
+
+<span class="code-comment"># 2. Train/test split</span>
+carseats_split &lt;- <span class="code-fn">initial_split</span>(carseats, prop = 0.80)
+carseats_train &lt;- <span class="code-fn">training</span>(carseats_split)
+carseats_test  &lt;- <span class="code-fn">testing</span>(carseats_split)
+
+<span class="code-comment"># 3. Fit with interaction</span>
+model &lt;- lm_spec |&gt;
+  <span class="code-fn">fit</span>(Sales ~ Price * ShelveLoc + Age + Advertising,
+      data = carseats_train)
+
+<span class="code-comment"># 4. Assess — tidy() / glance() / augment()</span>
+<span class="code-fn">tidy</span>(model)       <span class="code-comment"># coefficients with SEs and p-values</span>
+<span class="code-fn">glance</span>(model)     <span class="code-comment"># R², adj. R², AIC, BIC</span>
+<span class="code-fn">augment</span>(model, new_data = carseats_test) <span class="code-comment"># predictions + residuals</span>
+
+<span class="code-comment"># 5. Test set evaluation</span>
+carseats_test_aug |&gt;
+  <span class="code-fn">rsq</span>(truth = Sales, estimate = .pred)
+<span class="code-comment"># Test R² = 0.726 vs Train R² = 0.675 → generalizes well</span></code></div>
+
+    <h3>Show: Homework III — Reusable Functions as Software Craft</h3>
+
+    <div class="evidence">
+      <div class="evidence-label">Evidence · Homework-III.Rmd</div>
+      <p>Rather than copy-pasting the same assessment code for each backward-elimination step, I wrote a reusable <code>report_step()</code> function that encapsulates the repetitive pattern.</p>
+    </div>
+
+    <div class="code-block"><code>report_step &lt;- <span class="code-kw">function</span>(model, step_title=<span class="code-str">"Step 1"</span>, alpha = 0.05) {
+  td &lt;- <span class="code-fn">tidy</span>(model)
+  gl &lt;- <span class="code-fn">glance</span>(model)
+
+  <span class="code-comment"># candidates for removal: p.value > alpha (exclude intercept)</span>
+  candidates &lt;- td |&gt;
+    <span class="code-fn">filter</span>(term != <span class="code-str">"(Intercept)"</span>, p.value &gt; alpha) |&gt;
+    <span class="code-fn">arrange</span>(<span class="code-fn">desc</span>(p.value))
+
+  <span class="code-fn">print</span>(step_title)
+  <span class="code-fn">print</span>(td)
+  <span class="code-fn">print</span>(gl)
+  <span class="code-fn">print</span>(candidates)
+}</code></div>
+
+    <p>This is a small thing, but it reflects a programmer's mindset: identifying repetition, abstracting it, and making the code readable. It also made the backward-elimination output consistent across all four steps, which made comparing adjusted R² values straightforward.</p>
+
+    <h3>Show: Project 2 — Advanced TidyModels Features</h3>
+
+    <p>Project 2 pushed our software use into more advanced territory:</p>
+    <ul class="checklist">
+      <li><code>step_upsample(over_ratio = 0.5)</code> from the {themis} package — applied only within the training fold to prevent leakage</li>
+      <li><code>repair_call()</code> — a TidyModels utility to fix an internal reference bug in multinomial models so that <code>augment()</code> works correctly</li>
+      <li>10-fold cross-validation with <code>vfold_cv()</code> and <code>fit_resamples()</code> — to confirm test-set performance was not a lucky split</li>
+      <li>Workflow objects (<code>workflow()</code>) combining recipe steps and model specifications — keeping preprocessing and modeling together and preventing data leakage</li>
+    </ul>
+
+    <h3>Show: Homework IV — ggbivariate and Functional Abstraction</h3>
+
+    <p>In HW-IV, I re-implemented the <code>ggbivariate()</code> helper from the class Rmd rather than copying it blindly — adapting it to return a list of ggplot objects when multiple predictors are passed, which is more flexible. This required understanding ggplot's <code>aes(x = .data[[p]])</code> pattern for tidy evaluation inside a function. Small moments of genuine software problem-solving like this accumulate into fluency.</p>
+
+    <div class="highlight-box">
+      <strong>Reflection on software growth:</strong> My background as a machine learning engineer meant I was comfortable with Python and sklearn before this course. Learning TidyModels taught me a different philosophy — one where each step (recipe, model spec, workflow, resampling) is explicit and auditable. I now find myself applying this kind of pipeline thinking back in my ML work.
+    </div>
+  </section>
+
+  <!-- ── PARTICIPATION ── -->
+  <section id="participation">
+    <div class="section-header">
+      <div class="obj-number">Course Community</div>
+      <h2>Participation in our course learning community</h2>
+    </div>
+
+    <p>Participation, as I understand it in this course, means active contribution to a shared intellectual community — not just showing up or submitting work. Here is how I tried to do that.</p>
+
+    <div class="participation-grid">
+      <div class="part-card">
+        <h4>Questions in class</h4>
+        <p>I made a deliberate habit (from my Letter of Commitment) of asking questions during class rather than writing them down to look up later. When we covered multinomial logistic regression, I asked about the interpretation of coefficients when the baseline category changes — which turned into a useful class discussion about reference level choices.</p>
+      </div>
+      <div class="part-card">
+        <h4>Team project leadership</h4>
+        <p>In both projects, I contributed to the core modeling decisions — particularly the Poisson overdispersion diagnosis and the move to Negative Binomial in Project 2. I also wrote several sections of the Project 1 report, including the Diagnostics and Conclusion sections.</p>
+      </div>
+      <div class="part-card">
+        <h4>Peer collaboration</h4>
+        <p>Working with teammates Kabin, Shreya, and Udita across two projects meant negotiating modeling choices, explaining my reasoning, and incorporating others' perspectives. The decision to use upsampling for class imbalance in the multinomial model came from a team discussion where I initially wanted to use weights instead.</p>
+      </div>
+      <div class="part-card">
+        <h4>Engaging with feedback</h4>
+        <p>I returned to feedback on earlier homeworks when starting later ones. For example, the suggestion to pay closer attention to assumption checking in HW-I shaped how I approached diagnostics in HW-II and HW-III — spending more time on the residual vs. fitted plots and interpreting what patterns meant for the validity of inference.</p>
+      </div>
+    </div>
+
+    <p>I will be honest about where I fell short: my third original goal — maximizing in-class engagement while balancing multiple responsibilities — was the hardest to achieve consistently. Between two research projects, an internship, and other coursework, there were weeks where I came to class less prepared than I wanted to be. What I learned is that preparation is a prerequisite for active participation, not a nice-to-have, and I would approach this differently in future courses.</p>
+  </section>
+
+  <!-- ── LETTER ── -->
+  <section id="letter">
+    <div class="section-header">
+      <div class="obj-number">Self-Evaluation</div>
+      <h2>Letter of Self-Evaluation</h2>
+    </div>
+    <p>My self-evaluation letter responds to the Letter of Commitment I wrote in January, reflecting on my three learning goals and my overall progress in the course.</p>
+    <a class="letter-link" href="self_evaluation_letter.html">Read the Self-Evaluation Letter →</a>
+  </section>
+
+</main>
+
+<footer>
+  Nishan Khanal &nbsp;·&nbsp; STA 631 Statistical Modeling I &nbsp;·&nbsp; GVSU Winter 2026
+</footer>
+
+</body>
+</html>
