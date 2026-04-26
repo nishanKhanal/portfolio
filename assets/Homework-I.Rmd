@@ -1,0 +1,448 @@
+---
+title: "Homework-I"
+author: "Nishan Khanal"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(ggformula)
+library(ISLR)  
+library(MASS)   
+library(skimr)
+```
+
+# Question 1
+Linear Regression with the Auto Dataset
+    - This problem is adapted from ISLR, Chapter 3 Problem 8.
+    - Load the Auto dataset from the ISLR package.
+    - Use TidyModels functions (not lm()) to answer the questions in the text.
+  
+This question involves the use of simple linear regression on the Auto
+data set.
+
+(a) Use the TIdyModels to perform a simple linear regression with mpg as the response and horsepower as the predictor. Use the summary() function to print the results. Comment on the output.
+For example:
+    i. Is there a relationship between the predictor and the re-
+sponse?
+    ii. How strong is the relationship between the predictor and
+the response?
+    iii. Is the relationship between the predictor and the response
+positive or negative?
+    iv. What is the predicted mpg associated with a horsepower of
+98? What are the associated 95 % confidence and prediction
+intervals?
+
+(b) Plot the response and the predictor. Use the abline() function to display the least squares regression line.
+(c) Use the plot() function to produce diagnostic plots of the least squares regression fit. Comment on any problems you see with the fit.
+
+Load the auto data and skim it to know more about data dimension, data types and completion rate.
+```{r}
+data(Auto, package="ISLR")
+
+skim(Auto)
+```
+
+## Explore Variables of interests
+
+selecting variables of interests
+```{r}
+auto <- Auto |>
+  dplyr::select(mpg, horsepower)
+auto |>
+  head()
+```
+
+## Univariate plot of response and predictor variable
+```{r}
+auto |>
+  ggplot(aes(x = mpg)) +
+  geom_boxplot()
+
+auto |>
+  ggplot(aes(x = horsepower)) +
+  geom_boxplot()
+```
+
+From the above figure we can see that mpg is slightly right skewed and horsepower is highly right skewed with some outliers on the upper end.
+
+Let's answer the questions after fitting the linear regression model
+```{r}
+# difining the specificaiton for our linear model
+lm_spec <- linear_reg() |>
+  set_engine("lm") |>
+  set_mode("regression")
+```
+
+
+```{r}
+model_auto <- lm_spec |>
+  fit(mpg ~ horsepower, data = auto)
+
+model_auto_summary <- tidy(model_auto)
+model_auto_glance <- glance(model_auto)
+model_auto_summary
+model_auto_glance
+```
+
+
+  i. Is there a relationship between the predictor and the response?
+  
+>    Yes, there is a statistically significant linear relationship between `horsepower` and `mpg` as indicated by the near-zero p-value.
+    
+  ii. How strong is the relationship between the predictor and the response?
+  
+>    There is a moderate relationship between the `horsepower` and `mpg`. We can say that based on the value of $R^2$
+
+  iii. Is the relationship between the predictor and the response positive or negative?
+  
+>    The relationship between `horsepower` and `mpg` is negative as indicated by the negative slope. (negative value of the coefficient associated with horsepower). This indicates that with a unit increases in horsepower the mpg of the vehicles represented by our data decreases by 0.158.
+
+  iv. What is the predicted mpg associated with a horsepower of 98? What are the associated 95 % confidence and prediction intervals?
+
+
+```{r}
+test_auto_data = tibble(horsepower = 98)
+
+prediction <- predict(model_auto, new_data=test_auto_data)
+# Confidence Interval
+conf_int <- predict(model_auto, new_data=test_auto_data, type="conf_int")
+
+# Prediction Interval
+pred_int <- predict(model_auto, new_data=test_auto_data, type="pred_int")
+
+conf_int
+pred_int
+```
+>   The predicted mpg associated with a horsepower of 98 is `r round(prediction,2)`. The 95% confidence interval is (`r round(conf_int$.pred_lower[1],2)`, `r round(conf_int$.pred_upper[1],2)`), whereas the prediction interval is (`r round(pred_int$.pred_lower[1], 2)`, `r round(pred_int$.pred_upper[1], 2)`)
+
+>   The confidence interval indicates the confidence in predicting the average mpg for the cars having horsepower of 98. We are 95% confident that the average mpg of the cars with horspower 98 falls between `r round(conf_int$.pred_lower[1],2)` and `r round(conf_int$.pred_upper[1],2)`.
+>   The prediction interval indicates the confidence in predicting the mpg of a car having horsepower of 98. We are 95% confident that mpg of a car with horspower 98 falls in the range (`r round(pred_int$.pred_lower[1], 2)`, `r round(pred_int$.pred_upper[1], 2)`)
+
+
+(b) Plot the response and the predictor. Use the abline() function to display the least squares regression line.
+
+```{r}
+auto |>
+  mutate(.pred = predict(model_auto, new_data = auto)$.pred) |>
+  ggplot(aes(x = horsepower, y = mpg)) +
+  geom_point() +
+  geom_line(aes(y = .pred), color='red') # using this because abline drew a line from end to end
+```
+
+(c) Use the plot() function to produce diagnostic plots of the least squares regression fit. Comment on any problems you see with the fit.
+
+Let's plot the resduals vs fitted values and see the pattern/spread of the residuals
+```{r}
+auto_aug <- augment(model_auto, new_data = auto)
+auto_aug |>
+  ggplot(aes(x = .pred, y = .resid)) +
+  geom_point()+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") +
+  labs(
+    x = "Fitted values",
+    y ="Residuals")
+  
+```
+
+>   From the above figure we can see that the errors are not randomly scattered around the line(residual = 0). There seems to be a pattern. This suggest that the relationship may be non-linear. 
+
+>   We can also notice that the spread of the residuals increases after a certain point as the values of predictions increases. The variance of residual is not constant. This suggests heteroscedasticity.
+
+```{r}
+auto_aug |>
+  ggplot(aes(sample = .resid)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(
+    x = "Theoretical quantilies",
+    y = 'Residuals'
+  )
+```
+
+Looking at this qq plot its seems like the residuals may not follow a normal distribution
+
+# Question 2
+
+2. I collect a set of data (n = 100 observations) containing a single predictor X and a quantitative response Y . I then fit a linear regression model to the data, as well as a separate cubic regression model, i.e.,
+$$Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon  $$
+(a) Which model is more flexible? Why?
+
+>   The cubic regression model is more flexible because it has higher order polynomial terms which can bend in different ways
+
+(b) Suppose that the true relationship between X and Y is linear, i.e., $Y = \beta_0 + \beta_1 X +\epsilon$
+
+>    
+  
+  i. Based on model flexibility, which model would you expect to have a lower training RSS? Why?
+    
+>   I expect the cubic model to have a lower training RSS because the coefficient would be adjusted in a way that the curve either passes through or very closely goes through all the training points. High flexibility allows this model to better fit the training data. This would lead to overfitting.
+
+  (ii) Based on model flexibility, which model would you expect to have a lower test RSS? Why?
+
+>   Since, we know that the relationship is linear, I expect the linear model to have a lower test RSS because it would capture closely estimate the model parameters (intercept and the slope) of the underlying data. Low flexibility restricts this model from fitting noisy data, which inturn leads better fit of the underlying linear pattern. 
+
+# Question 3: Regression with the Boston Dataset
+This dataset contains information collected by the U.S Census Service concerning real estate information in the area of Boston, Massachusetts.In the context of R, the Boston dataset is found in the MASS library and has 506 rows and 14 columns. The median value of a home, medv, is to be predicted using the social economic status (lstat) Tasks: Include a full analysis similar to what we did for the Human Freedom Index data in class. Key components should include the following (but not limited to):
+
+  - Fit a simple linear regression model with medv as your response and lstat as your predictor.
+  
+  - Perform a train/test split to assess predictive performance.
+  
+  - Report regression output (using TidyModels) and construct confidence intervals for model coefficients and interpret
+  
+  - Provide a short discussion of whether the predictor provides a reasonable model for medv. Include model diagnostics etc.
+  
+  
+```{r}
+data(Boston, package='MASS')
+
+skim(Boston)
+```
+
+# Explore Variables of interests
+
+selecting variables of interests
+```{r}
+boston <- Boston |>
+  dplyr::select(medv, lstat)
+boston |>
+  head()
+```
+Let's understand the meaning of the variables we are interested in. The `lstat` predictor variable represts the percentage of population with lower socioeconomic status and `medv` indicates the median value of owner-occupied homes in $1000s
+
+## Univariate plot of response and predictor variable
+```{r}
+boston |>
+  ggplot(aes(x = medv)) +
+  geom_boxplot()
+
+boston |>
+  ggplot(aes(x = lstat)) +
+  geom_boxplot()
+```
+
+From the above figure we can see that both `medv` and `lstat` are right skewed with outliers on the upper end.
+
+
+Let's draw a scatter plot with a regression line to see if the relationship is linear or not
+```{r}
+boston |>
+  ggplot(aes(x=lstat, y=medv))+
+  geom_point() +
+  geom_lm()
+```
+From the above plot, it seems like there is a linear relationship between `lstat` and `medv`. So, let's fit a linear model to the data and see how it performs.
+
+
+```{r}
+# difining the specificaiton for our linear model
+lm_spec <- linear_reg() |>
+  set_engine("lm") |>
+  set_mode("regression")
+```
+
+Fitting linear model to the data
+```{r}
+model_boston <- lm_spec |>
+  fit(medv ~ lstat, data = boston)
+
+model_boston_summary <- tidy(model_boston)
+model_boston_glance <- glance(model_boston)
+model_boston_summary
+model_boston_glance
+```
+
+
+From summary of our linear model, it is clear that there is a statistically significant relationship between `lstat` and `medv` indicated by very low p-value. 
+
+There is a negative relationship between `lstat` and `medv`
+
+The above model can be mathematically represented as:
+
+$$\widehat{medv} = 34.55 - 0.95 \times lstat$$
+
+Let's interpret the coefficients of the model. 
+
+>   In the absence of population considered as low status, the median owner-occupied house price will be \$34553.84. 
+
+>   And, as the percentage of lower status population goes up by a unit, the median owner-occupied house price decreases by \$950. 
+
+
+## Model assessment with train/test split
+
+```{r train-test}
+# set seed before random split
+set.seed(1)
+
+boston_split <- initial_split(boston, prop = 0.8)
+
+boston_train <- training(boston_split)
+boston_test <- testing(boston_split)
+
+```
+
+
+```{r train-fit-lm}
+model_boston_train <- lm_spec %>% 
+  fit(medv ~ lstat, data = boston_train)
+
+tidy(model_boston_train, conf.int = TRUE)
+```
+### Interpretation
+
+We can mathematically express the model as:
+
+$$\widehat{medv} = 35.1957 -0.9835 \times lstat$$
+
+Let's interpret the parameters of the model. 
+
+>   In the absence of population considered as low status, the median owner-occupied house price will be \$35195.74. 
+
+>   And, as the percentage of lower status population goes up by a unit, the median owner-occupied house price decreases by \$983.59.
+
+#### Confidence interval 
+
+Let's interpret the confidence interval:
+
+>   We are 95% confident that in the absence of the population considered as low status, the average median owner-occupied house will be in the range ($33928.539,	$36462.9341)
+
+>   We are 95% confident that for a unit increase in the percentage of lower status population, the average median owner-occupied house price decreases by between $895.75 to $1071.4
+
+```{r}
+glance(model_boston_train)
+```
+   
+Interpreting $R^2$
+
+>   This model explain 54.66% of the variance in the training data. 
+
+
+#### Assessment on the test set
+
+Let's test the performance of the model on the test set
+```{r glance-test}
+boston_test_aug <- augment(model_boston_train, new_data = boston_test) |>
+  dplyr::select(medv, .pred, .resid, lstat)
+boston_test_aug|>
+  head()
+```
+
+
+```{r}
+boston_test |>
+  mutate(.pred = predict(model_boston_train,new_data=boston_test)$.pred) |>
+  rsq(truth=medv,estimate=.pred)
+```
+>   When we apply this model to unseen data (test set), it explains 55.06% of the variance. 
+
+Let's compare how the fit line changes when we use test set to evaluate the models trained on the entire dataset vs just the test set.
+
+```{r}
+boston_test_aug |>
+  mutate(mod_full.pred=predict(model_boston,new_data=boston_test)$.pred) |>
+  gf_point(medv~lstat) |>
+  gf_line(.pred~lstat,col='blue') |>
+  gf_line(mod_full.pred~lstat,col='red')
+
+```
+
+The red line indicates the fit on the test set of the model trained on the entire dataset. The blue line indicates the fit on the test set of the model trained only on the train split of the dataset.
+
+
+### Model diagnostics
+
+Let's check for the three assumptions of the linear regression models on the dataset it was trained on.
+
+```{r}
+boston_train_aug <- augment(model_boston_train, new_data = boston_train)
+boston_train_aug
+```
+
+We are checking for the following assumpstions:
+
+- *Linearity*
+
+- *Homoscedasticity* 
+
+- *Normality of Residuals*
+
+
+For the first two, let's plot residual vs fitted values 
+
+```{r }
+ggplot(data = boston_train_aug, aes(x = .pred, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+```
+
+
+From the figure we can say that:
+
+- There seem to be a curved pattern which suggest that the relation may be **non-linear** between `lstat` and `medv`
+
+- the spread of the residuals doesn't seem to be constant, this suggest **heteroscedasticity**, which violates another assumption.
+
+For testing normality of residuals, let's look at the qq plot of residuals
+
+```{r}
+boston_train_aug |>
+  ggplot(aes(sample=.resid)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(
+    x = "Theoretical quantilies",
+    y = 'Residuals'
+  )
+
+boston_train_aug |>
+  ggplot(aes(x = .resid)) +
+  geom_histogram()
+```
+
+From the above qq_plot and histogram, it seems like they are not normally distributed. Let's run shapiro-wilk test to test whether they are normally distributed or not at $\alpha = 0.05$.
+
+```{r}
+shapiro.test(boston_train_aug$.resid)
+```
+
+*Hypothesis*:
+
+|   $H_0$ : The residuals are normally distributed
+
+|   $H_a$ : The residuals are not normally distributed
+
+
+
+*Test-Statistic*:
+W = 0.86753
+
+
+
+*P-value:*
+ p-value = 2.2e-16
+
+
+*Conclusion (at $\boldsymbol{\alpha}$= 0.05):*
+Since, p-value < $\alpha$, we reject $H_0$ in favor of $H_a$, i.e There is sufficient evidence to conclude that the residuals are not normally distributed.
+
+
+### Analysis
+
+Based on the my analysis, I don't think we should be using this model, because the assumptions of the linear regression models are violated. Firstly, the residual vs fitted values plot shows a discernible u-shaped pattern which seem to suggest that there may exist non-linear relationship. Secondly, the assumption of constant variance seems to be violated, when we look at the same plot. The spread of residual seems to grow towards the right side of the plot. Lastly, we show with the shapir-wilk normality test that the residuals are not normally distributed.
+
+Maybe, we can increase the degree of the polynomial and see if how that model would perform. 
+
+
+
+

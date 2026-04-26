@@ -1,0 +1,350 @@
+---
+title: "Homework-III"
+author: "Nishan Khanal"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(ggformula)
+library(GGally)
+library(ISLR)  
+library(skimr)
+library(car)
+```
+Backward selection
+
+Use the Auto dataset (can be found in ISLR R package). Our objectives:
+
+  - Predict acceleration using the remaining quantitative variables.
+  - Which, if any, of the variables are significant predictors of acceleration.
+  - How good is the resulting prediction?
+
+1. Remove the name and origin columns from the dataset. Then
+    - Produce a ggpairs plot. Write a short discussion (2–3 sentences) about what the plot suggests for multiple linear regression (collinearity, pairwise relationships, etc.).
+
+2. Start from the full model with all quantitative predictors. Do a manual backward selection using p-values to determine what to remove until all predictors are significant at the α = 0.05 level. Filter the tidy() output to show only candidates for removal, i.e. p-values > α. Remove the predictor with the largest p-value at each step. Compare the full (unfiltered) tidy() results and adjusted R2 at each step to the previous step.
+
+3. With the final model (from (2)), check residuals, interpret coefficients, report confidence intervals on coefficients.
+
+
+Load the auto data and skim it to know more about data dimension, data types and completion rate.
+```{r}
+data(Auto, package="ISLR")
+glimpse(Auto)
+```
+
+Let's know more about the different variables in this dataset:
+
+`mpg`:
+miles per gallon
+
+`cylinders`:
+Number of cylinders between 4 and 8
+
+`displacement`:
+Engine displacement (cu. inches)
+
+`horsepower`:
+Engine horsepower
+
+`weight`:
+Vehicle weight (lbs.)
+
+`acceleration`:
+Time to accelerate from 0 to 60 mph (sec.)
+
+`year`:
+Model year (modulo 100)
+
+`origin`:
+Origin of car (1. American, 2. European, 3. Japanese)
+
+`name`:
+Vehicle name
+
+
+---
+
+Discard the name and origin column and skim the dataset
+```{r}
+auto <- Auto |>
+  dplyr::select(-name, -origin)
+
+skim(auto)
+```
+The average time in seconds to go from 0 to 60 mph represented as `acceleration` for the vehicles in this dataset is 15.54s, and the average  mpg is 23.45.
+
+
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+
+auto |>
+  select(acceleration, everything()) |>
+  ggpairs()
+```
+
+
+`horsepower` has the highest absolute correlation with our response variable(acceleration) closely followed by displacement and cylinders, and then mpg. year has weak positive correlation. 
+
+We can also notice our predictors are highly correlated with each other. For example, the correlation between cylinders and displacement is 0.951 - very strong. Other strong correlation include between displacement and weight, cylinders and horsepower, cylinders and weight, displacement and horsepower, displacement and mpg, horsepower and weight, and weight and mpg. This can cause issue when fitting the model due to multicollinearity. 
+
+
+# Question 2
+Start from the full model with all quantitative predictors. Do a manual backward selection using p-values to determine what to remove until all predictors are significant at the α = 0.05 level. Filter the tidy() output to show only candidates for removal, i.e. p-values > α. Remove the predictor with the largest p-value at each step. Compare the full (unfiltered) tidy() results and adjusted R2 at each step to the previous step.
+
+
+Since we will be fitting a model multiple times with backward elimination, and report the output, let's create a reusable function to report the output
+
+```{r}
+report_step <- function(model, step_title="Step 1", alpha = 0.05) {
+  td  <- tidy(model)               
+  gl  <- glance(model)
+  
+
+  # candidates for removal: p.value > alpha (exclude intercept)
+  candidates <- td |>
+    filter(term != "(Intercept)", p.value > alpha) |>
+    arrange(desc(p.value))
+  
+  
+  print(step_title)
+  cat("\n\nFull Tidy output\n")
+  print(td)
+  cat("\n\n")
+  
+  cat("Glance into the model\n")
+  print(gl)
+  cat("\n\n")
+  
+  print("Candidates to be removed:")
+  print(candidates)
+  
+  invisible(list(model = model, tidy = td, glance = gl, candidates = candidates))
+}
+
+# create a specification for a linear regression model
+
+lm_spec <- linear_reg() |>
+  set_mode("regression") |>
+  set_engine("lm")
+```
+
+
+Let's split our data into train and test set so that we can evaluate our model later.
+```{r}
+set.seed(1)
+
+# put 80% of the data into the train set and 20% in test set
+auto_split <- initial_split(auto, prop = 0.80)
+
+auto_train <- training(auto_split)
+auto_test <- testing(auto_split)
+
+
+```
+
+
+### Step 1: Full model (all the predictors)
+
+Let's start building the model by including all the predictors.
+
+```{r}
+alpha = 0.05
+
+formula_1 <- acceleration ~ mpg + cylinders + displacement + horsepower + weight + year
+
+model_1 <- lm_spec |>
+  fit(formula_1, data = auto_train)
+
+output_1 = report_step(model_1, step_title = "Step 1: Full (all predictors)", alpha=0.05)
+
+```
+
+Looking at the full tidy output, we see that `horsepower`, and `weight` are highly significant based on the p-values. Additionally, displacement is also significant. The relationship between the predictors and the response seem to follow the same relationship as we had seen in the correlation analysis.
+
+This model with all the predictors explains 57.58% of the variance in `acceleration`. 
+
+Looking at the variables with coefficients whose p.value > `r alpha`, we see there are three such predictors, namely: cylinders, mpg and year - in order of decreasing p-value. Let's remove cylinders (variable whose coefficient has the highest p-value). 
+
+----
+
+### Step 2 : Removing `cylinders` 
+
+
+```{r}
+formula_2 <- acceleration ~ mpg + displacement + horsepower + weight + year
+
+model_2 <- lm_spec |>
+  fit(formula_2, data = auto_train)
+
+output_2 = report_step(model_2, step_title = "Step 2: Removed `cylinders`")
+
+```
+
+Looking at the full tidy output, we see that `horsepower`, `weight`, and `displacement` are highly significant based on the p-values. Removing statistically insignificant predictors changed the p-value of `displacement` significantly. 
+
+This model without `cylinders` explains the 57.71% of the variance in `acceleration`, similar to the earlier one. 
+
+Looking at the variables with coefficients whose p.value > `r alpha`, we now see there are two such predictors: `mpg` and `year`. Let's remove mpg (variable whose coefficient has the highest p-value). 
+
+
+---
+
+
+### Step 3 : Removing `mpg` 
+
+```{r}
+formula_3 <- acceleration ~ displacement + horsepower + weight + year
+
+model_3 <- lm_spec |>
+  fit(formula_3, data = auto_train)
+
+output_3 = report_step(model_3, step_title = "Step 3: Removed `mpg`")
+
+```
+
+Looking at the full tidy output, we still see that `horsepower`, `weight` and `displacement` are highly significant based on the p-values. The relationship between the predictors and the response also follows the same relationship as we had seen in the correlation analysis.
+
+This model without `cylinders` and `mpg` explains 57.70% of the variance in `acceleration`. 
+
+Looking at the variables with coefficients whose p.value > `r alpha`, we now one such predictor - year. 
+
+---
+
+### Step 4 : Removing `year` 
+
+```{r}
+formula_4 <- acceleration ~ displacement + horsepower + weight
+
+model_4 <- lm_spec |>
+  fit(formula_4, data = auto_train)
+
+output_4 = report_step(model_4, step_title = "Step 4: Removed `year`")
+
+```
+
+Looking at the full tidy output, we see that `horsepower`, `weight`, and `displacement` are the significant predictors of `acceleration`. These predictors are obtained through the backward elimination process.
+
+This model without `mpg`, `cylinders`, `year` explains 57.79% of the variance in `acceleration`, similar to the model above.
+
+---
+
+Since we know that these predictors are correlated with each other. Let's calculate VIF to quantify their severity of multicollinearity 
+
+```{r}
+model_4$fit |>
+  vif()
+```
+Since two variables have VIF greater than 5, it indicates that the model might be unstable and we should be cautious while making inference on the model. However, since their regression coefficients follow the same relationship to the target as we had seen during the correlation analysis, I've decided to keep them as the predictors for the final model.
+
+# Question 3
+With the final model (from (2)), check residuals, interpret coefficients, report confidence intervals on coefficients.
+
+The final model can be expressed as: 
+$$
+\widehat{acceleration} = \beta_0 + \beta_1 \times displacement + \beta_2 \times horsepower + \beta_3 \times weight
+$$
+
+Substituting the coefficients:
+$$
+\widehat{acceleration} = 17.0136 - 0.0107 \times displacement - 0.0832 \times horsepower + 0.0031 \times weight
+$$
+
+### Coefficient interpretation
+
+- $\beta_0$:
+    It does not make sense to interpret this value because this represents the time it takes for a vehicle to go from 0 to 60mph whose displacement, horsepower and weight is 0 (Not possible). 
+  
+- $\beta_1$:
+    Keeping everything else constant, increasing the displacement of the engine by 1 cu inch reduces the predicted time it takes to go from 0 to 60 (`acceleration`) by 0.0107 second. However, it is difficult to keep other variables constant when increasing displacement, because it has a strong correlation with weight and horsepower.
+    
+- $\beta_2$:
+    Keeping everything else constant, increasing the horsepower of the vehicle by 1 unit reduces the predicted time it takes to go from 0 to 60(`acceleration`) by 0.0832 second. However, it is difficult to keep other variables constant when increasing horsepower, because it has a strong correlation with displacement and weight.
+    
+- $\beta_3$:
+    Keeping everything else constant, increasing the weight of the vehicle by 1 lb increases the predicted time it takes to go from 0 to 60(`acceleration`) by 0.0031 second. However, it is difficult to keep other variables constant when increasing weight, because it has a strong correlation with displacement and horsepower.
+    
+    
+### Confidence interval of coefficeints
+
+```{r}
+tidy(model_4, conf.int = TRUE)
+```
+
+
+
+- Confidence interval of $\beta_0$:
+    It does not make sense to interpret this value because this represents the time it takes for a vehicle to go from 0 to 60mph whose displacement, horsepower and weight is 0 (Not possible). 
+  
+- Confidence interval of $\beta_1$:
+    Keeping everything else constant, we are 95% confident that increasing the displacement of the engine by 1 cu inch reduces the predicted time it takes to go from 0 to 60 (`acceleration`) by between 0.0166 and 0.0048 seconds. However, it is difficult to keep other variables constant when increasing displacement, because it has a strong correlation with weight and horsepower.
+    
+- Confidence interval of $\beta_2$:
+    Keeping everything else constant, increasing the horsepower of the vehicle by 1 unit reduces the predicted time it takes to go from 0 to 60(`acceleration`) by between 0.0950 and 0.0715 seconds. However, it is difficult to keep other variables constant when increasing horsepower, because it has a strong correlation with displacement and weight.
+    
+- Confidence interval of $\beta_3$:
+    Keeping everything else constant, increasing the weight of the vehicle by 1 lb increases the predicted time it takes to go from 0 to 60(`acceleration`) by between 0.0025 and 0.0038 seconds. However, it is difficult to keep other variables constant when increasing weight, because it has a strong correlation with displacement and horsepower.
+    
+
+### Model Assessment
+
+```{r}
+auto_test |>
+  mutate(.pred = predict(model_4 ,new_data=auto_test)$.pred) |>
+  rsq(truth=acceleration, estimate=.pred)
+```
+
+The predictors in the final model explain 72% of the variance in the acceleration in the test set. So, we can say that the model generalized well for unseen datasets.
+
+---
+
+#### Assumptions analysis
+
+
+Since we fitted the linear regression model which has the following assumptions, let's test them for:
+
+- Linearity
+- Homoscedasticity
+- Normality of Residuals
+
+```{r}
+
+auto_aug <- augment(model_4, new_data = auto)
+
+gf_point(.resid ~ .pred, data = auto_aug) |>
+  gf_hline(yintercept = 0) |>
+  gf_labs(title = "Standardized residuals vs fitted")
+
+```
+
+It seems like the there's a bow shaped pattern, which suggest the relationship between the predictors and the acceleration may be non-linear. Additionally, the spread of the residual first decreases and then increases again, which suggests heteroscedasticity.
+
+To check the whether or not the residuals follow normal distribution let's draw a qq plot.
+
+```{r}
+  
+gf_qq(~.resid, data = auto_aug) |>
+  gf_qqline() |>
+  gf_labs(title = "Normal Q-Q plot (standardized residuals)",
+          x = "Theoretical quantilies",
+          y = 'Residuals')
+  
+```
+
+While most points in the middle lie on the line, however, the a lot of points at the top stray away from the line, so the residual may not follow normal distribution.
+
+### Conclusion
+
+Based, on the residual analysis, we can't certainly say the assumptions of normality, linearity between the predictors and the response, and heteroscedasticity of residuals are satisfied well. Additionally, it should also be noted that the predictors are highly correlated with each other. So, we should also be cautious while doing inference. 
+

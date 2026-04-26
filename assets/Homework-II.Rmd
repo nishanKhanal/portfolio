@@ -1,0 +1,442 @@
+---
+title: "Homework-II"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+author: "Nishan Khanal"
+    
+execute:
+    eval: true # Evaluate code
+    echo: true # Show code
+    warning: false # Suppress warnings
+    message: false # Suppress messages
+    # fig-width: 4
+    # fig-heigh: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width = 8)
+```
+
+```{r}
+library(tidymodels)
+library(tidyverse)
+library(GGally)
+library(ggformula)
+library(ISLR)
+library(skimr)
+# library(gridExtra)
+# library(broom)
+```
+
+# (a) Exploration and Model identification
+- Explore the data using summaries and visualizations
+- Identify your chosen predictors (quantitative & qualitative)
+- Justify why they are reasonable for predicting sales.
+- Propose an initial multiple regression model that includes an interaction
+
+## Exploration
+```{r}
+data(Carseats, package="ISLR")
+
+carseats <- Carseats
+
+print(head(carseats))
+skim(carseats)
+```
+
+Let's first understand each variables in the datasets. I extracted this from [RDRR](https://rdrr.io/cran/ISLR/man/Carseats.html)
+
+`Sales`:
+Unit sales (in thousands) at each location
+
+`CompPrice`:
+Price charged by competitor at each location
+
+`Income`:
+Community income level (in thousands of dollars)
+
+`Advertising`:
+Local advertising budget for company at each location (in thousands of dollars)
+
+`Population`:
+Population size in region (in thousands)
+
+`Price`:
+Price company charges for car seats at each site
+
+`ShelveLoc`:
+A factor with levels Bad, Good and Medium indicating the quality of the shelving location for the car seats at each site
+
+`Age`:
+Average age of the local population
+
+`Education`:
+Education level at each location
+
+`Urban`:
+A factor with levels No and Yes to indicate whether the store is in an urban or rural location
+
+`US`:
+A factor with levels No and Yes to indicate whether the store is in the US or not
+
+---
+
+There are 3 factor categorical variables 
+
+
+```{r}
+#| warning: false
+#| message: false
+#| fig-width: 24
+#| fig-height: 24
+carseats |>
+  # rearranging so that the categorical variables are at the end. 
+  select(Sales, CompPrice, Income, Advertising, Population, Price, Age, Education, ShelveLoc, Urban, US)|>
+    select(Sales, CompPrice, Income, Advertising, Population, Price, Age, Education, ShelveLoc, Urban, US)|>
+  ggpairs()
+```
+
+## Identification of Predictors and Justificaiton
+
+### Quantitative variables
+
+Among the quantitative variables, only Price has moderate correlation (-0.445) with our response variables (Sales), all other have either weak (Advertising (0.270), Age (-0.232), Income (0.152)) or ~ no correlation (0.064, 0.052, 0.050) with our response (Sales).
+
+I am choosing Price, Advertising, Age as quantitative predictors as they are the top 3 predictors based on the correlation coefficients. 
+
+### Qualitative variables
+
+Zooming in on the qualitative variables and their relationship with the sales volume of carseats.
+
+```{r}
+gf_boxplot(Sales ~ factor(ShelveLoc, level=c("Bad", "Medium", "Good")), data = carseats) |>
+  gf_labs(title = "Sales by ShelveLoc")
+```
+
+> It seems like the distribution of sales volume is different for different qality of shelve location. 
+
+---
+
+```{r}
+gf_boxplot(Sales ~ Urban, data = carseats) |>
+  gf_labs(title = "Sales by Urban")
+```
+
+> It seems like the distribution of sales is similar for stores on both urban and rural areas.
+
+---
+
+```{r}
+gf_boxplot(Sales ~ US, data = carseats) |>
+  gf_labs(title = "Sales by US")
+```
+
+> It seems like the distribution of sales volume is slightly different for US and non-US locations.
+
+---
+
+Based on the above visualization, I'm selecting ShelveLoc as a qualitative predictor, as the distribution of our response variables `sales` is visibly different for different qualities of shelve location. 
+
+### Interaction terms
+
+Looking into whether price (the variable with highest degree of relationship with our response) may affect the sales volume differently based on the different levels of our available qualitative variables. 
+
+> Checking whether the relationship between price and sales is the same/different for different quality of shelve location.
+
+```{r}
+gf_point(Sales ~ Price, color = ~ShelveLoc,  data = carseats) |>
+  gf_lm() |>
+  gf_labs(title = "Sales vs Price (colored by ShelveLoc)")
+```
+
+> From the above figure, it seems like the the relationship between carseats price and sales volume is somewhat different for good shelve location than for medium/bad shelve location quality. (based on the slope of the regline)
+
+---
+
+> Checking whether the relationship between carseats price and sales volume is the same/different for stores in urban or rural areas.
+
+```{r}
+gf_point(Sales ~ Price, color = ~Urban,  data = carseats) |>
+  gf_lm() |>
+  gf_labs(title = "Sales vs Price (colored by Urban)")
+```
+
+> From the above figure, we can say that the degree of relationship between carseats price and sales volume is slightly different based on whether the store location is in urban area or not.
+
+---
+
+> Checking whether the relationship between carseats price and sales volume is the same/different for US/Non-US locations.
+
+
+```{r}
+gf_point(Sales ~ Price, color = ~US,  data = carseats) |>
+  gf_lm() |>
+  gf_labs(title = "Sales vs Price (colored by US/Non-US)")
+```
+
+
+> From the above figure, we can say that the degree of relationship between carseats price and sales volume is very similar based on whether the store is in US or not.
+
+---
+
+> **Based on the above visualization and analysis, I'm selecting shelveLoc and Price as interaction term.**
+
+```{r}
+# carseats_sub <- carseats |>
+#   select(Sales, Price, Advertising, Age, ShelveLoc)
+
+```
+
+
+## Proposed Model
+
+I propose the following model:
+
+
+$$ 
+\begin{aligned}
+\widehat{Sales} =\;& \beta_0
++ \beta_1 \times Price
++ \beta_2 \times ShelveLocGood
++ \beta_3 \times ShelveLocMedium
++ \beta_4 \times Age \\
+&+ \beta_5 \times Advertising
++ \beta_6 \times Price \times ShelveLocGood
++ \beta_7 \times Price \times ShelveLocMedium
+\end{aligned}
+$$
+
+More specifically:
+
+When, quality of shelve location is bad:
+
+$$ 
+ \widehat{Sales} = \beta_0  + \beta_1 \times Price + \beta_4 \times Age + \beta_5 \times Advertising 
+$$
+
+---
+
+When, quality of shelve location is medium:
+
+$$ 
+ \begin{aligned}\widehat{Sales} =\;& \beta_0+ \beta_1 \times Price + \beta_3 \\ &+ \beta_4 \times Age + \beta_5 \times Advertising + \beta_7 \times Price\end{aligned}
+$$
+
+---
+
+When, quality of shelve location is good:
+
+
+$$ 
+ \begin{aligned}\widehat{Sales} =\;& \beta_0  + \beta_1 \times Price + \beta_2 + \beta_4 \times Age + \beta_5 \times Advertising + \beta_6 \times Price \end{aligned}
+$$
+
+---
+
+
+
+```{r}
+#fit the mlr model
+lm_spec <- linear_reg() %>%
+  set_mode("regression") %>%
+  set_engine("lm")
+
+set.seed(1)
+# put 80% of the data into the training set
+carseats_split <- initial_split(carseats, prop = 0.80)
+
+# assign the two splits to data frames - with descriptive names
+carseats_train <- training(carseats_split)
+carseats_test <- testing(carseats_split)
+
+model <- lm_spec |>
+  fit(Sales ~ Price * ShelveLoc + Age + Advertising, data = carseats_train)
+
+tidy(model)
+glance(model)
+```
+
+When, quality of shelve location is bad:
+
+$$ 
+ \widehat{Sales} = 14.9874  - 0.0622 \times Price - 0.0540 \times Age + 0.1055 \times Advertising 
+$$
+
+---
+
+When, quality of shelve location is medium:
+
+$$ 
+ \begin{aligned}\widehat{Sales} =\;& 14.9874  - 0.0622 \times Price + 1.0387 \\&- 0.0540 \times Age + 0.1055 \times Advertising + 0.0063 \times Price\end{aligned}
+$$
+
+---
+
+When, quality of shelve location is good:
+
+
+$$ 
+ \begin{aligned}\widehat{Sales} =\;& 14.9874 - 0.0622 \times Price + 4.8552 \\&- 0.0540 \times Age + 0.1055 \times Advertising - 0.0034 \times Price \end{aligned}
+$$
+
+---
+
+Combined model:
+
+$$
+\begin{aligned}
+\widehat{Sales} =\;& 14.9874
+- 0.0622 \times Price
++ 4.8552 \times ShelveLocGood
++ 1.0387 \times ShelveLocMedium
+- 0.0540 \times Age \\
+&+ 0.1055 \times Advertising
+- 0.0034 \times Price \times ShelveLocGood
++ 0.0063 \times Price \times ShelveLocMedium
+\end{aligned}
+$$
+
+# (b) Interpretation of the coefficients
+
+We have to be cautious with this model when making inferences, because the coefficient associated with ShelveLocMedium and the coefficients associated with the interaction between the price and quality of shelve location is not significant at alpha=0.05
+
+- Interpretation of $\beta_0$
+
+> It is difficult to interpet ${\beta_0}$ in this case because because its value represents the sales volume in absence of other predictors, for example, `Price` (free items), `Age`(0, not possible), and `Advertising`. We can say it for free products placed in bad shelve location with no advertising budget, but it's difficult to say that for the average age of the local population to be zero.
+
+- Interpretation of $\beta_1$
+
+> For same amount spent on advertising, in towns with same average age of the population, for unit increase in price of the carseats, the predicted total sales volume of the carseats placed on bad shelve location goes down by ~ 62 items. 
+
+- Interpretation of $\beta_2$
+
+> It is the effect of good quality of shelve location when price is 0( or free [This may not be realistic] ) on sales volume. Keeping everying else constant, and when the carseats are free, if they are placed in good shelve location the predicted sales volume will go up by 4855 units as compared to the ones kept on bad shelve locations.
+
+- Interpretation of $\beta_3$
+
+> It is the effect of medium quality of shelve location when price is 0( or free [This may not be realistic] ) on sales volume as compared to the bad quality of shelve location. Keeping everying else constant, and when the carseats are free, if they are placed in medium quality shelve location the predicted sales volume will go up by 1039 units as compared to the ones kept on bad shelve locations.
+
+
+- Interpretation of $\beta_4$
+
+> Keeping everying else constant and for the carseats kept in bad shelve location, when the average age of the population goes up by 1, the predicted sales volume decreases by 54 units.
+
+- Interpretation of $\beta_5$
+
+> Keeping everying else constant and for the carseats kept in bad shelve location, for every $1000 increase in advertising, the predicted sales volume increases by 105 units.
+
+- Interpretation of $\beta_6$ (interaction term)
+
+> Kepping everying else constant, for carseats with a good shelf location, the effect of Price on Sales is 3 units lower than for carseats with a bad shelf location.
+
+- Interpretation of $\beta_7$ (interaction term)
+
+> Kepping everying else constant, for carseats with a medium quality shelf location, the effect of Price on Sales is 6 units higher than for carseats with a bad shelf location.
+
+- Explain how the relationship between the quantitative predictor and Sales changes across levels of the qualitative predictor.
+ 
+> Keeping everything else constant, when carseats are placed on good shelf location as opposed to bad shelve location the sales volume down by (62 + 3) =65 units for every unit increase in price. Additionally, Keeping everything else constant, when carseats are placed on medium quality shelf location as opposed to bad shelve location the sales volume down by (62 - 6) = 56 units for every unit increase in price.
+
+
+
+## (c) Accuracy of the model
+
+```{r}
+glance(model)
+```
+67.5% of the variation in the sales of carseats in our training data is explained by predictors of our model.
+
+
+#### Assessment on the test set
+
+Let's test the performance of the model on the test set
+```{r}
+carseats_test_aug <- augment(model, new_data = carseats_test) |>
+  select(.pred, .resid, Sales, Price, Age, Advertising, ShelveLoc)
+
+carseats_test_aug |>
+  head()
+```
+
+First 5 rows of predictions on the test set is listed above
+
+---
+
+Let's see the goodness of fit using the $R^2$ metric on the test set.
+
+```{r}
+carseats_test_aug |>
+  rsq(truth=Sales,estimate=.pred)
+```
+
+72.6% of the variation in the sales volume of the carseats in the test set is explained by the predictors of our model.
+
+This means that the model generalizes well to unseen data as indicated by a comparable/higher test $R^2$ value to the train $R^2$
+
+## Prediction of new observation
+
+```{r}
+new_obs <- tibble(
+  Price = 120,
+  Advertising = 3,
+  Age = 55,
+  ShelveLoc = factor("Good", levels = levels(carseats$ShelveLoc))
+)
+
+pred <- predict(model, new_data = new_obs)
+conf_int <- predict(model, new_data = new_obs, type = "conf_int", level=0.95)
+pred_int <- predict(model, new_data = new_obs, type = "pred_int", level=0.95)
+
+print(pred)
+print(conf_int)
+print(pred_int)
+```
+> The predicted sales volume for carseat placed on a good shelve location with price = \$120, when \$3000 was spent on advertising this carseat in a town where the average age of the population is 55 years is 10052 units
+
+> We are 95% confident that the average sales volume for carseats placed on a good shelve location with price = \$120, when \$3000 was spent on advertising in a town where the average age of the population is 55 years will be in the range of 9679 to 10425 units
+
+> We are 95% confident that the sales volume for a carseat placed on a good shelve location with price = \$120, when \$3000 was spent on advertising in a town where the average age of the population is 55 years will be in the prediction interval of 6906 to 13199 units.	
+
+
+## (e) Model Assessment
+
+Since we fitted the linear regression model which has the following assumptions, let's test them:
+- Linearity
+- Homoscedasticity
+- Normality of Residuals
+
+```{r}
+
+carseats_aug <- augment(model, new_data = carseats)
+
+gf_point(.resid ~ .pred, data = carseats_aug) |>
+  gf_hline(yintercept = 0) |>
+  gf_labs(title = "Standardized residuals vs fitted")
+
+```
+
+Since we don't see any specific pattern in the above plot, it seems the relationship between the predictors and the response (Sales) is linear. Additionally, the spread of residual is almost constant across the different fitted values, so this suggests homoscedasticity. 
+
+To check the whether or not the residuals follow normal distribution let's draw a qq plot.
+
+```{r}
+  
+gf_qq(~.resid, data = carseats_aug) |>
+  gf_qqline() |>
+  gf_labs(title = "Normal Q-Q plot (standardized residuals)",
+          x = "Theoretical quantilies",
+          y = 'Residuals')
+  
+```
+
+Since almost all the points lie on the theoretical quantiles line, it looks like the residuals follow normal distribution. 
+
+
+## Conclusion 
+
+Based on the visualization of residuals against the fitted values, we could say that the assumptions of linearity and homoscedasticity are reasonable. Additionally, looking at the qq plot, we can say the the assumption of the normality of residual is also reasonable. However, in our model, we can see the p-value of few coefficients are greater than 0.05, which means that they are not statistically significant at 95% confidence level. 
+
+# References:
+[Interpretaiton citation](https://www.theanalysisfactor.com/interpreting-interactions-in-regression/)

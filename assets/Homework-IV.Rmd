@@ -1,0 +1,290 @@
+---
+title: "Homework 4: Multinomial Logistic Regression (Add Party)"
+output:
+  html_document: default
+  # pdf_document: 
+  #   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(ggformula)
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+
+```
+
+## The data
+
+We will use the FiveThirtyEight nonvoters survey data and fit a multinomial logistic regression model for `voter_category`. Homework 4 asks us to complete the *challenge* from the class `Multinomial.Rmd` by adding `party` to the model and comparing results.
+
+### Load and prepare the data
+
+```{r }
+nonvoters <- read.csv("nonvoters.csv") |>
+  as_tibble() |>
+  select(ppage, educ, race, gender, income_cat, Q30, voter_category) |>
+  mutate(
+    # Create party from Q30
+    party = case_when(
+      Q30 == 1 ~ "Republican",
+      Q30 == 2 ~ "Democrat",
+      Q30 == 3 ~ "Independent",
+      Q30 %in% c(4, 5, -1) ~ "Other",
+      TRUE ~ "Other"
+    ),
+    # Baseline party = Other (so party coefficients are vs Other)
+    party = factor(party, levels = c("Other", "Independent", "Democrat", "Republican")),
+    # Baseline voter_category = rarely/never (required by HW)
+    voter_category = factor(voter_category, levels = c("rarely/never", "sporadic", "always"))
+  )
+
+glimpse(nonvoters)
+```
+
+---
+
+## 1) Bivariate plot: voter category by party
+
+```{r bivariate-party}
+ggbivariate("voter_category",  c("party"),
+  title = "Voter category by party (proportions)",
+  data = nonvoters
+)
+```
+
+**What it suggests about predictive capability of party (write-up):**  
+If the proportions of `rarely/never`, `sporadic`, and `always` differ across party categories, then party likely provides predictive information for voting behavior. If the stacked bars look very similar across party categories, then party may add little predictive capability beyond demographics.
+
+
+It looks like very high proportion(~50%) of the people who don't identify themselves as independent, democrat, or republican rarely/never vote. Among the ones that identify as independent, democrat, or republican, most of them are sporadic voters.
+
+---
+
+## 2) Fit multinomial models (without party vs with party)
+
+We fit two models:
+
+- **Model (no party):** `voter_category ~ ppage + educ + race + gender + income_cat`
+- **Model (with party):** add `party` to the predictors
+
+```{r}
+multi_mod <- multinom_reg() |>
+  set_engine("nnet") |>
+  fit(voter_category ~ ppage + educ + race + gender + income_cat, data = nonvoters)
+
+multi_mod <- repair_call(multi_mod, data = nonvoters)
+
+multi_mod_with_party <- multinom_reg() |>
+  set_engine("nnet") |>
+  fit(voter_category ~ ppage + educ + race + gender + income_cat + party, data = nonvoters)
+
+multi_mod_with_party <- repair_call(multi_mod_with_party, data = nonvoters)
+```
+
+### Coefficients (print all rows)
+
+```{r}
+tidy(multi_mod) |>
+  print(n = Inf)
+
+tidy(multi_mod_with_party) |>
+  print(n = Inf)
+```
+
+---
+
+## 3) Write out the new equation for "always" with respect to "rarely/never"
+
+Baseline outcome is `"rarely/never"`, so the "always vs rarely/never" log-odds equation is:
+$$
+\begin{align*}
+\log\left(\frac{\hat{p}_{\text{always}}}{\hat{p}_{\text{rarely/never}}}\right) &= -2.9196 \\
+&+ 0.0582 \times \text{ppage} \\
+&- 1.2672 \times \text{educHigh school or less} \\
+&- 0.3303 \times \text{educSome college} \\
+&- 0.3410 \times \text{raceHispanic} \\
+&- 0.6005 \times \text{raceOther/Mixed} \\
+&+ 0.1271 \times \text{raceWhite} \\
+&- 0.1922 \times \text{genderMale} \\
+&- 0.0004 \times \text{income_cat\$40-75k} \\
+&+ 0.1652 \times \text{income_cat\$75-125k} \\
+&- 0.6641 \times \text{income_catLess than \$40k}\\
+&+ 0.8387 \times \text{partyIndependent})\\
+&+ 1.4010 \times \text{partyDemocrat})\\
+&+ 1.2392 \times \text{partyRepublican})\\
+\end{align*}
+$$
+where party is coded relative to the baseline `Other`.
+
+---
+
+## 4) Interpret the slope for genderMale (and compare change after adding party)
+
+Extract `genderMale` (term name may contain "genderMale") from the "always" equation.
+
+```{r}
+always_no_party <- tidy(multi_mod) |>
+  filter(y.level == "always")
+
+always_with_party <- tidy(multi_mod_with_party) |>
+  filter(y.level == "always")
+
+always_no_party |>
+  filter(str_detect(term, "gender"))
+
+always_with_party |>
+  filter(str_detect(term, "gender"))
+```
+In the model which doesn't include party as predictor:
+
+> The slope for genderMale = -0.2106. The log odds of being a always (vs rarely/never) voter is -0.2106 unit less for a male voter as compared to a female voter, keeping everything else constant.
+
+> In other words, The odds of being a always (vs rarely/never) voter is 19% less for a male voter as compared to a female voter, keeping everything else constant.
+
+
+When we include party in the list of predictor variables:
+
+> The slope for genderMale = -0.1922. The log odds of being a always (vs rarely/never) voter is -0.1922 unit less for a male voter as compared to a female voter, keeping everything else constant.
+
+> In other words, The odds of being a always (vs rarely/never) voter is 17.5% less for a male voter as compared to a female voter, keeping everything else constant.
+
+The slope for genderMale increases slightly(from -0.2106 to -1922).
+
+When, we include party as the predictor the percentage decrease in odds of being a always (vs rarely/never) voter for a male voter as compared to a female voter reduces by 1.5%. This means that some of the association between gender and voting category may be explain party.
+
+---
+
+## 5) Interpret the slopes for Republican and Democrat
+
+```{r}
+always_with_party |>
+  filter(str_detect(term, "party"))
+```
+
+> **The log odds of being a always (vs rarely/never) voter increases by 1.401 for a person who identified as a democrat as compared to the one who identifies as other (neither democrat, republican or independent), keeping everything else constant.**
+
+> **In other words, The odds of being a always (vs rarely/never) voter increases by a factor of 4.0593 (~406%) for a person who identified as a democrat as compared to the one who identifies as other (neither democrat, republican or independent), keeping everything else constant.**
+
+> **The log odds of being a always (vs rarely/never) voter increases by 1.2392 for a person who identified as a republican as compared to the one who identifies as other (neither democrat, republican or independent), keeping everything else constant.**
+
+> **In other words, The odds of being a always (vs rarely/never) voter increases by a factor of 3.4529 (~345%) for a person who identified as a republican as compared to the one who identifies as other (neither democrat, republican or independent), keeping everything else constant.**
+
+
+---
+
+## 6) Get predictions and discuss what they mean
+
+```{r}
+voter_aug <- augment(multi_mod, new_data = nonvoters)
+voter_aug_with_party <- augment(multi_mod_with_party, new_data = nonvoters)
+
+voter_aug_with_party |>
+  select(voter_category, .pred_class, starts_with(".pred")) |>
+  slice_head(n = 10)
+```
+From the above table, we can see the table with actual voter category, predicted probabilities for each voter category and the predicted voter category for first ten samples.
+
+---
+
+## 7) Visualize predictions vs actual and interpret
+
+```{r visualize-preds}
+nonvoters |>
+  ggplot(aes(x = voter_category)) +
+  geom_bar() +
+  labs(main = "Self-reported voter category")
+
+voter_aug |>
+  count(voter_category, .pred_class, .drop = FALSE) |>
+  ggplot(aes(x = voter_category, y = n, fill = .pred_class)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Predicted vs self-reported voter category")
+
+voter_aug_with_party |>
+  count(voter_category, .pred_class, .drop = FALSE) |>
+  ggplot(aes(x = voter_category, y = n, fill = .pred_class)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Predicted vs self-reported voter category (with party)")
+```
+
+The model without the party as predictor, most of the samples are predicted as sporadic even though they are actually from different class. This is particularly worse for actual always voter category. 
+
+The new model which includes party in the predictors list, behaves similarly. The new model seems to perform tiny bit better for the actual rarely/never and always category while comparing the figure, but we have to look at the confusion matrix to tell the difference.
+
+
+---
+
+## 8) Confusion matrices and interpretation
+
+```{r confusion-matrices}
+voter_conf_mat <- voter_aug |>
+  count(voter_category, .pred_class, .drop = FALSE)
+
+voter_conf_mat |>
+  pivot_wider(names_from = .pred_class, values_from = n)
+
+voter_conf_mat_with_party <- voter_aug_with_party |>
+  count(voter_category, .pred_class, .drop = FALSE)
+
+voter_conf_mat_with_party |>
+  pivot_wider(names_from = .pred_class, values_from = n)
+```
+In the above confusion matrix, each row are the actual voter category and the columns are the predicted category. The diagonal represents the true positives for each class.
+
+Looking at the confusion matrix for both of the models, they are predicting most of the people to be sporadic voters. The model with party included in the predictors does slightly better at correctly identifying rarely/never and always voters as compared to the one previous model. We can also see a slight decline in predicting the sporadic voters, however, it is very tiny.
+
+---
+
+## 9) Assessment suggested in the challenge: did adding party help?
+
+### (a) Accuracy comparison
+
+```{r}
+acc_no_party <- voter_aug |>
+  summarise(accuracy = mean(voter_category == .pred_class)) |>
+  mutate(model = "No party")
+
+acc_with_party <- voter_aug_with_party |>
+  summarise(accuracy = mean(voter_category == .pred_class)) |>
+  mutate(model = "With party")
+
+bind_rows(acc_no_party, acc_with_party) |>
+  select(model, accuracy)
+```
+
+We can see that the accuracy improved slightly when we include party. We should also be cautious when just looking at accuracy when the we have imbalanced classes because the accuracy can be dominated by the majority class. For example, if 50% of the people were sporadic voters, just predicting every individual will be sporadic voter will get us the accuracy of 50%. So, we should also checkout other metric like precision, recall, etc. 
+
+Let's calculate the macro-averaged precision and recall for our models.
+```{r}
+library(yardstick)
+
+# Precision for each class
+precision <- voter_aug |>
+  precision(truth = voter_category, estimate = .pred_class) |>
+  mutate(model= "without_party")
+
+# Recall for each class
+recall <- voter_aug |>
+  recall(truth = voter_category, estimate = .pred_class) |>
+  mutate(model= "without_party")
+
+# Precision for each class
+precision_by_class_with_party <- voter_aug_with_party |>
+  precision(truth = voter_category, estimate = .pred_class) |>
+  mutate(model= "with_party")
+
+# Recall for each class
+recall_by_class_with_party <- voter_aug_with_party |>
+  recall(truth = voter_category, estimate = .pred_class) |>
+  mutate(model= "with_party")
+
+rbind(precision, recall, precision_by_class_with_party, recall_by_class_with_party)
+```
+
+
+It looks like both precision and recall seem to increase by a little bit for the model which includes party as predictor.
