@@ -10,18 +10,18 @@
   <style>
     /* ── TOKENS ── */
     :root {
-      --ink:      #1a1a2e;
-      --paper:    #f5f2eb;
-      --accent:   #c0392b;
-      --teal:     #2c7a7b;
-      --muted:    #6b6b6b;
-      --rule:     #d4cfc6;
-      --code-bg:  #e8e4db;
-      --hi:       #fef3c7;
-      --sidebar-w: 220px;
+      --ink:     #1a1a2e;
+      --paper:   #f5f2eb;
+      --accent:  #c0392b;
+      --teal:    #2c7a7b;
+      --muted:   #6b6b6b;
+      --rule:    #d4cfc6;
+      --code-bg: #e8e4db;
+      --hi:      #fef3c7;
+      --nav-h:   52px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 8px); }
     body {
       background: var(--paper);
       color: var(--ink);
@@ -30,129 +30,177 @@
       line-height: 1.72;
     }
 
-    /* ═══════════════════════════════════════
-       SIDEBAR NAV  (desktop: fixed left)
-    ═══════════════════════════════════════ */
-    #sidebar {
+    /* ══════════════════════════════════════
+       FIXED TOP NAV
+    ══════════════════════════════════════ */
+    #topnav {
       position: fixed;
-      top: 0; left: 0;
-      width: var(--sidebar-w);
-      height: 100vh;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
       background: var(--ink);
+      z-index: 300;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 100%;
       display: flex;
-      flex-direction: column;
-      z-index: 200;
-      overflow-y: auto;
-      scrollbar-width: none;
+      align-items: center;
+      gap: 0;
     }
-    #sidebar::-webkit-scrollbar { display: none; }
-
-    .sidebar-brand {
-      padding: 1.6rem 1.4rem 1.2rem;
-      border-bottom: 1px solid rgba(245,242,235,0.08);
-    }
-    .sidebar-brand .name {
+    /* Brand */
+    .nav-brand {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: var(--paper);
       font-weight: 400;
-      line-height: 1.2;
+      white-space: nowrap;
+      margin-right: 1.5rem;
+      flex-shrink: 0;
     }
-    .sidebar-brand .course {
+    .nav-brand span {
+      color: var(--accent);
       font-family: 'DM Mono', monospace;
       font-size: 0.62rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-top: 0.3rem;
+      margin-left: 0.6rem;
+      vertical-align: middle;
     }
 
-    .sidebar-nav {
-      flex: 1;
-      padding: 0.75rem 0;
-    }
-    .nav-group-label {
+    /* Plain nav links */
+    .nav-link {
       font-family: 'DM Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.14em;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: rgba(245,242,235,0.25);
-      padding: 1rem 1.4rem 0.3rem;
-    }
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.55rem 1.4rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.03em;
       color: rgba(245,242,235,0.45);
       text-decoration: none;
-      border-left: 2px solid transparent;
-      transition: color 0.18s, border-color 0.18s, background 0.18s;
-      line-height: 1.35;
-    }
-    .sidebar-nav a .num {
-      font-size: 0.58rem;
-      color: rgba(245,242,235,0.2);
-      flex-shrink: 0;
-      width: 1.2rem;
-    }
-    .sidebar-nav a:hover {
-      color: var(--paper);
-      background: rgba(255,255,255,0.04);
-    }
-    .sidebar-nav a.active {
-      color: var(--paper);
-      border-left-color: var(--accent);
-      background: rgba(192,57,43,0.08);
-    }
-    .sidebar-nav a.active .num { color: var(--accent); }
-
-    .sidebar-footer {
-      padding: 1rem 1.4rem;
-      border-top: 1px solid rgba(245,242,235,0.07);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      color: rgba(245,242,235,0.2);
-      line-height: 1.6;
-    }
-
-    /* ═══════════════════════════════════════
-       MOBILE HEADER + HAMBURGER
-    ═══════════════════════════════════════ */
-    #mobile-header {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 52px;
-      background: var(--ink);
-      z-index: 300;
+      padding: 0 0.85rem;
+      height: 100%;
+      display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 1.25rem;
-      border-bottom: 1px solid rgba(245,242,235,0.08);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.18s, border-color 0.18s;
+      flex-shrink: 0;
     }
-    #mobile-header .m-brand {
-      font-family: 'DM Serif Display', serif;
+    .nav-link:hover, .nav-link.active {
       color: var(--paper);
-      font-size: 0.95rem;
-      font-weight: 400;
+      border-bottom-color: var(--accent);
     }
+
+    /* Dropdown wrapper */
+    .nav-dropdown {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .nav-dropdown-toggle {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(245,242,235,0.45);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      padding: 0 0.85rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      transition: color 0.18s, border-color 0.18s;
+    }
+    .nav-dropdown-toggle:hover,
+    .nav-dropdown.open .nav-dropdown-toggle {
+      color: var(--paper);
+      border-bottom-color: var(--accent);
+    }
+    /* Chevron */
+    .nav-dropdown-toggle::after {
+      content: '';
+      display: inline-block;
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid currentColor;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-dropdown.open .nav-dropdown-toggle::after {
+      transform: rotate(180deg);
+    }
+    /* Dropdown panel */
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      min-width: 220px;
+      background: var(--ink);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-top: 2px solid var(--accent);
+      padding: 0.4rem 0;
+      z-index: 400;
+    }
+    .nav-dropdown.open .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.6rem 1.1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.69rem;
+      letter-spacing: 0.04em;
+      color: rgba(245,242,235,0.5);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-dropdown-menu a:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--paper);
+    }
+    .nav-dropdown-menu a.active {
+      color: var(--paper);
+      background: rgba(192,57,43,0.12);
+    }
+    .nav-dropdown-menu a .num {
+      font-size: 0.6rem;
+      color: var(--accent);
+      width: 1.5rem;
+      flex-shrink: 0;
+    }
+    /* Divider */
+    .nav-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.1);
+      margin: 0 0.25rem;
+      flex-shrink: 0;
+    }
+    /* Spacer pushes last items right */
+    .nav-spacer { flex: 1; }
+
+    /* Mobile hamburger — hidden on desktop */
     #hamburger {
+      display: none;
       background: none;
       border: none;
       cursor: pointer;
       padding: 6px;
-      display: flex;
       flex-direction: column;
       gap: 5px;
+      margin-left: auto;
     }
     #hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
+      display: block; width: 22px; height: 2px;
       background: rgba(245,242,235,0.7);
       transition: transform 0.25s, opacity 0.25s;
     }
@@ -160,28 +208,58 @@
     #hamburger.open span:nth-child(2) { opacity: 0; }
     #hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* Mobile sidebar overlay */
-    #sidebar-overlay {
+    /* Mobile slide-down menu */
+    #mobile-menu {
       display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 199;
+      position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      background: var(--ink);
+      border-bottom: 2px solid var(--accent);
+      z-index: 299;
+      padding: 0.5rem 0 1rem;
+      max-height: calc(100vh - var(--nav-h));
+      overflow-y: auto;
     }
-    #sidebar-overlay.visible { display: block; }
-
-    /* ═══════════════════════════════════════
-       MAIN CONTENT AREA
-    ═══════════════════════════════════════ */
-    #content {
-      margin-left: var(--sidebar-w);
-      min-height: 100vh;
+    #mobile-menu.open { display: block; }
+    .mobile-section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(245,242,235,0.25);
+      padding: 0.9rem 1.4rem 0.25rem;
     }
+    #mobile-menu a {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 1.4rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.04em;
+      color: rgba(245,242,235,0.5);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, background 0.15s;
+    }
+    #mobile-menu a:hover, #mobile-menu a.active {
+      color: var(--paper);
+      border-left-color: var(--accent);
+      background: rgba(255,255,255,0.04);
+    }
+    #mobile-menu a .num { font-size: 0.6rem; color: var(--accent); width: 1.5rem; flex-shrink: 0; }
+    #overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 298;
+    }
+    #overlay.open { display: block; }
 
-    /* ── PAGE HEADER ── */
+    /* ══════════════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════════════ */
+    body { padding-top: var(--nav-h); }
+
     .page-header {
       background: var(--ink);
       color: var(--paper);
-      padding: 3.5rem 3rem 3rem;
+      padding: 3.5rem 2rem 3rem;
       position: relative;
       overflow: hidden;
     }
@@ -199,7 +277,9 @@
       border: 22px solid rgba(44,122,123,0.1);
       pointer-events: none;
     }
-    .header-inner { max-width: 700px; position: relative; z-index: 1; }
+    .header-inner {
+      max-width: 780px; margin: 0 auto; position: relative; z-index: 1;
+    }
     .header-label {
       font-family: 'DM Mono', monospace;
       font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -212,45 +292,33 @@
     }
     .header-sub {
       font-size: 0.97rem; color: rgba(245,242,235,0.6);
-      max-width: 520px; font-weight: 300;
+      max-width: 540px; font-weight: 300;
     }
     .header-meta {
       margin-top: 1.75rem; display: flex; gap: 1.75rem; flex-wrap: wrap;
     }
-    .meta-item {
-      font-family: 'DM Mono', monospace; font-size: 0.72rem;
-      color: rgba(245,242,235,0.45);
-    }
-    .meta-item strong {
-      display: block; color: rgba(245,242,235,0.8);
-      font-size: 0.82rem; margin-bottom: 0.12rem;
-    }
+    .meta-item { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(245,242,235,0.45); }
+    .meta-item strong { display: block; color: rgba(245,242,235,0.8); font-size: 0.82rem; margin-bottom: 0.12rem; }
 
-    /* ── CONTENT BODY ── */
+    /* Content body — full width with max-width */
     .content-body {
-      max-width: 720px;
-      padding: 0 3rem 6rem;
-      margin: 0;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
     }
 
-    /* ── SECTIONS ── */
-    section {
-      padding: 3rem 0;
-      border-bottom: 1px solid var(--rule);
-    }
+    /* ══════════════════════════════════════
+       CONTENT STYLES
+    ══════════════════════════════════════ */
+    section { padding: 3rem 0; border-bottom: 1px solid var(--rule); }
     section:last-child { border-bottom: none; }
-    .section-header {
-      display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem;
-    }
+    .section-header { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
     .obj-number {
       font-family: 'DM Mono', monospace; font-size: 0.65rem;
       letter-spacing: 0.12em; color: var(--accent);
       text-transform: uppercase; white-space: nowrap; padding-top: 0.18rem;
     }
-    h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.45rem; font-weight: 400; line-height: 1.25;
-    }
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; line-height: 1.25; }
     h3 {
       font-family: 'DM Sans', sans-serif; font-size: 0.76rem; font-weight: 500;
       letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
@@ -259,7 +327,6 @@
     p { margin-bottom: 0.95rem; }
     p:last-child { margin-bottom: 0; }
 
-    /* ── EVIDENCE CARD ── */
     .evidence {
       background: white; border: 1px solid var(--rule);
       border-left: 3px solid var(--teal); border-radius: 2px;
@@ -273,7 +340,6 @@
     .evidence p { font-size: 0.91rem; color: #3a3a3a; margin: 0; }
     .evidence p + p { margin-top: 0.4rem; }
 
-    /* ── CODE ── */
     .code-block {
       background: var(--code-bg); border: 1px solid var(--rule);
       border-radius: 2px; padding: 0.85rem 1rem; margin: 1rem 0; overflow-x: auto;
@@ -287,7 +353,6 @@
     .cs { color: #2c7a7b; }
     .ck { color: #6b3fa0; }
 
-    /* ── PILLS ── */
     .results-row { display: flex; gap: 0.65rem; flex-wrap: wrap; margin: 1rem 0; }
     .pill {
       background: var(--ink); color: var(--paper); border-radius: 2px;
@@ -298,17 +363,15 @@
       letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.08rem;
     }
 
-    /* ── HIGHLIGHT ── */
     .hi-box {
       background: var(--hi); border: 1px solid #f0d060;
       border-radius: 2px; padding: 0.85rem 1rem; margin: 1rem 0; font-size: 0.92rem;
     }
     .hi-box strong { color: var(--accent); }
 
-    /* ── FIGURE ── */
     .fig-wrap { margin: 1.4rem 0; }
     .fig-wrap img {
-      width: 100%; max-width: 640px; display: block;
+      width: 100%; max-width: 680px; display: block;
       border: 1px solid var(--rule); border-radius: 3px;
     }
     .fig-caption {
@@ -316,7 +379,6 @@
       color: var(--muted); margin-top: 0.4rem; line-height: 1.5;
     }
 
-    /* ── TABLE ── */
     table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 1rem 0; }
     th {
       font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em;
@@ -326,7 +388,6 @@
     td { padding: 0.42rem 0.65rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
     tr:last-child td { border-bottom: none; }
 
-    /* ── CHECKLIST ── */
     .checklist { list-style: none; margin: 0.65rem 0; }
     .checklist li {
       padding: 0.28rem 0; font-size: 0.91rem;
@@ -337,7 +398,6 @@
       font-family: 'DM Mono', monospace; font-size: 0.76rem; flex-shrink: 0;
     }
 
-    /* ── PARTICIPATION GRID ── */
     .part-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
       gap: 0.9rem; margin: 1.4rem 0;
@@ -353,7 +413,6 @@
     }
     .part-card p { font-size: 0.83rem; color: var(--muted); margin: 0; }
 
-    /* ── LETTER LINK ── */
     .letter-link {
       display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.25rem;
       background: var(--ink); color: var(--paper); text-decoration: none;
@@ -363,34 +422,51 @@
     }
     .letter-link:hover { background: var(--accent); }
 
-    /* ── FOOTER ── */
+    /* References */
+    .ref-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem; margin: 1rem 0 2rem;
+    }
+    .ref-card {
+      background: white; border: 1px solid var(--rule);
+      border-radius: 3px; padding: 1.1rem 1.2rem;
+    }
+    .ref-title {
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+      font-weight: 500; color: var(--ink); margin-bottom: 0.35rem;
+    }
+    .ref-desc {
+      font-size: 0.8rem; color: var(--muted);
+      line-height: 1.5; margin-bottom: 0.85rem;
+    }
+    .ref-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ref-btn {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.32rem 0.75rem; font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.04em; text-decoration: none;
+      border-radius: 2px; border: 1px solid transparent;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ref-btn-pdf  { background: #fef2f2; color: var(--accent); border-color: #fecaca; }
+    .ref-btn-pdf:hover  { background: var(--accent); color: white; border-color: var(--accent); }
+    .ref-btn-html { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+    .ref-btn-html:hover { background: #16a34a; color: white; border-color: #16a34a; }
+    .ref-btn-rmd  { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+    .ref-btn-rmd:hover  { background: #2563eb; color: white; border-color: #2563eb; }
+
     footer {
       background: var(--ink); color: rgba(245,242,235,0.35);
-      padding: 1.75rem 3rem; font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; letter-spacing: 0.07em;
+      padding: 1.75rem 2rem; font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.07em; text-align: center;
     }
 
-    /* ═══════════════════════════════════════
-       RESPONSIVE — mobile breakpoint
-    ═══════════════════════════════════════ */
-    @media (max-width: 768px) {
-      #sidebar { transform: translateX(-100%); transition: transform 0.28s ease; }
-      #sidebar.open { transform: translateX(0); }
-      #mobile-header { display: flex; }
-      #content { margin-left: 0; padding-top: 52px; }
-      .page-header { padding: 2rem 1.5rem; }
-      .content-body { padding: 0 1.5rem 4rem; }
-      footer { padding: 1.5rem; }
-    }
-
-    /* ── FADE-IN ── */
+    /* Animations */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    section {
-      animation: fadeUp 0.4s ease both;
-    }
+    section { animation: fadeUp 0.4s ease both; }
     section:nth-child(2) { animation-delay: 0.05s; }
     section:nth-child(3) { animation-delay: 0.10s; }
     section:nth-child(4) { animation-delay: 0.15s; }
@@ -399,136 +475,114 @@
     section:nth-child(7) { animation-delay: 0.30s; }
     section:nth-child(8) { animation-delay: 0.35s; }
 
-    /* ── REFERENCES ── */
-    .ref-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1rem;
-      margin: 1rem 0 2rem;
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 700px) {
+      .nav-link, .nav-dropdown, .nav-divider, .nav-spacer { display: none; }
+      #hamburger { display: flex; }
+      .content-body { padding: 0 1.25rem 4rem; }
+      .page-header { padding: 2.5rem 1.25rem 2rem; }
     }
-    .ref-card {
-      background: white;
-      border: 1px solid var(--rule);
-      border-radius: 3px;
-      padding: 1.1rem 1.2rem;
+
+    .footer-main {
+      margin-bottom: 0.6rem;
     }
-    .ref-title {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--ink);
-      margin-bottom: 0.35rem;
+    .footer-disclosure {
+      font-size: 0.6rem;
+      color: rgba(245,242,235,0.22);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.6;
     }
-    .ref-desc {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-bottom: 0.85rem;
-    }
-    .ref-links {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .ref-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.32rem 0.75rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.04em;
+    .footer-disclosure a {
+      color: rgba(245,242,235,0.35);
       text-decoration: none;
-      border-radius: 2px;
-      border: 1px solid transparent;
-      transition: background 0.15s, color 0.15s;
+      border-bottom: 1px solid rgba(245,242,235,0.15);
+      transition: color 0.15s;
     }
-    .ref-btn-pdf {
-      background: #fef2f2;
-      color: var(--accent);
-      border-color: #fecaca;
-    }
-    .ref-btn-pdf:hover { background: var(--accent); color: white; border-color: var(--accent); }
-    .ref-btn-html {
-      background: #f0fdf4;
-      color: #16a34a;
-      border-color: #bbf7d0;
-    }
-    .ref-btn-html:hover { background: #16a34a; color: white; border-color: #16a34a; }
-    .ref-btn-rmd {
-      background: #eff6ff;
-      color: #2563eb;
-      border-color: #bfdbfe;
-    }
-    .ref-btn-rmd:hover { background: #2563eb; color: white; border-color: #2563eb; }
+    .footer-disclosure a:hover { color: rgba(245,242,235,0.6); }
   </style>
 </head>
 <body>
 
 <!-- ══════════════════════════════════════
-     SIDEBAR
+     FIXED TOP NAV
 ══════════════════════════════════════ -->
-<aside id="sidebar">
-  <div class="sidebar-brand">
-    <div class="name">Nishan Khanal</div>
-    <div class="course">STA 631 &middot; Winter 2026</div>
-  </div>
+<nav id="topnav">
+  <div class="nav-inner">
 
-  <nav class="sidebar-nav" aria-label="Portfolio sections">
-    <div class="nav-group-label">Portfolio</div>
-    <a href="#intro"><span class="num">&mdash;</span>Overview</a>
+    <div class="nav-brand">
+      N. Khanal <span>STA 631</span>
+    </div>
 
-    <div class="nav-group-label">Learning Objectives</div>
-    <a href="#obj1"><span class="num">01</span>Probability &amp; Inference</a>
-    <a href="#obj2"><span class="num">02</span>Appropriate GLMs</a>
-    <a href="#obj3"><span class="num">03</span>Model Selection</a>
-    <a href="#obj4"><span class="num">04</span>Communication</a>
-    <a href="#obj5"><span class="num">05</span>Software</a>
+    <div class="nav-divider"></div>
 
-    <div class="nav-group-label">Reflection</div>
-    <a href="#participation">Participation</a>
-    <a href="#letter">Self-Evaluation</a>
-    <a href="#references">Source Files</a>
-  </nav>
+    <a href="#intro"         class="nav-link">Overview</a>
 
-  <div class="sidebar-footer">
-    Grand Valley State University<br>
-    Dr. John Appiah Kubi<br>
-    April 26, 2026
-  </div>
-</aside>
-
-<!-- ══════════════════════════════════════
-     MOBILE HEADER
-══════════════════════════════════════ -->
-<div id="mobile-header">
-  <span class="m-brand">N. Khanal &mdash; STA 631</span>
-  <button id="hamburger" aria-label="Toggle navigation">
-    <span></span><span></span><span></span>
-  </button>
-</div>
-<div id="sidebar-overlay"></div>
-
-<!-- ══════════════════════════════════════
-     MAIN CONTENT
-══════════════════════════════════════ -->
-<div id="content">
-
-  <header class="page-header">
-    <div class="header-inner">
-      <div class="header-label">STA 631 &middot; Statistical Modeling I &middot; Winter 2026</div>
-      <h1>Nishan Khanal<br><em>Final Portfolio</em></h1>
-      <p class="header-sub">A demonstration of statistical modeling learning across five course objectives &mdash; grounded in homeworks, team projects, and the habits of mind developed along the way.</p>
-      <div class="header-meta">
-        <div class="meta-item"><strong>Institution</strong>Grand Valley State University</div>
-        <div class="meta-item"><strong>Instructor</strong>Dr. John Appiah Kubi</div>
-        <div class="meta-item"><strong>Submitted</strong>April 26, 2026</div>
-        <div class="meta-item"><strong>Program</strong>MS Data Science &amp; Analytics</div>
+    <!-- Learning Objectives dropdown -->
+    <div class="nav-dropdown" id="loDropdown">
+      <button class="nav-dropdown-toggle" id="loToggle" aria-haspopup="true" aria-expanded="false">
+        Learning Objectives
+      </button>
+      <div class="nav-dropdown-menu" id="loMenu" role="menu">
+        <a href="#obj1" role="menuitem"><span class="num">01</span>Probability &amp; Inference</a>
+        <a href="#obj2" role="menuitem"><span class="num">02</span>Appropriate GLMs</a>
+        <a href="#obj3" role="menuitem"><span class="num">03</span>Model Selection</a>
+        <a href="#obj4" role="menuitem"><span class="num">04</span>Communication</a>
+        <a href="#obj5" role="menuitem"><span class="num">05</span>Software</a>
       </div>
     </div>
-  </header>
 
-  <div class="content-body">
+    <div class="nav-divider"></div>
+
+    <a href="#participation" class="nav-link">Participation</a>
+    <a href="#letter"        class="nav-link">Self-Evaluation</a>
+    <a href="#references"    class="nav-link">Source Files</a>
+
+    <!-- Mobile hamburger -->
+    <button id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+</nav>
+
+<!-- Mobile full menu -->
+<div id="mobile-menu" role="dialog" aria-label="Navigation">
+  <div class="mobile-section-label">Portfolio</div>
+  <a href="#intro">Overview</a>
+  <div class="mobile-section-label">Learning Objectives</div>
+  <a href="#obj1"><span class="num">01</span>Probability &amp; Inference</a>
+  <a href="#obj2"><span class="num">02</span>Appropriate GLMs</a>
+  <a href="#obj3"><span class="num">03</span>Model Selection</a>
+  <a href="#obj4"><span class="num">04</span>Communication</a>
+  <a href="#obj5"><span class="num">05</span>Software</a>
+  <div class="mobile-section-label">Reflection</div>
+  <a href="#participation">Participation</a>
+  <a href="#letter">Self-Evaluation</a>
+  <a href="#references">Source Files</a>
+</div>
+<div id="overlay"></div>
+
+<!-- ══════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════ -->
+<header class="page-header">
+  <div class="header-inner">
+    <div class="header-label">STA 631 &middot; Statistical Modeling I &middot; Winter 2026</div>
+    <h1>Nishan Khanal<br><em>Final Portfolio</em></h1>
+    <p class="header-sub">A demonstration of statistical modeling learning across five course objectives &mdash; grounded in homeworks, team projects, and the habits of mind developed along the way.</p>
+    <div class="header-meta">
+      <div class="meta-item"><strong>Institution</strong>Grand Valley State University</div>
+      <div class="meta-item"><strong>Instructor</strong>Dr. John Appiah Kubi</div>
+      <div class="meta-item"><strong>Submitted</strong>April 26, 2026</div>
+      <div class="meta-item"><strong>Program</strong>MS Data Science &amp; Analytics</div>
+    </div>
+  </div>
+</header>
+
+<div class="content-body">
 
     <!-- INTRO -->
     <section id="intro">
@@ -855,7 +909,7 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Project 1 &mdash; Linear Regression (Diamonds)</div>
           <div class="ref-desc">Can carat weight be predicted from visual characteristics? Best-subset selection, polynomial regression, three-way validation split. Test R&sup2;&nbsp;=&nbsp;0.997.</div>
           <div class="ref-links">
-            <a href="assets/project1_diamonds_linear_regression_report.pdf" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/project1_diamonds_linear_regression_report.pdf" class="ref-btn ref-btn-pdf" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               Report PDF
             </a>
@@ -870,7 +924,7 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Project 2 &mdash; Classification (K-12 Education)</div>
           <div class="ref-desc">Predicting educational success from family engagement. Multinomial logistic regression, Negative Binomial, logistic regression, LDA/QDA on the 2019 PFI survey.</div>
           <div class="ref-links">
-            <a href="assets/project2_classification_k12.docx" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/project2_classification_k12.docx" class="ref-btn ref-btn-pdf" download target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               Report Docx
             </a>
@@ -890,11 +944,11 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Homework I &mdash; Simple Linear Regression</div>
           <div class="ref-desc">Auto and Boston datasets. Simple linear regression, confidence vs. prediction intervals, residual diagnostics, Shapiro-Wilk normality test.</div>
           <div class="ref-links">
-            <a href="assets/Homework-I.pdf" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/Homework-I.pdf" class="ref-btn ref-btn-pdf" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               PDF
             </a>
-            <a href="assets/Homework-I.html" class="ref-btn ref-btn-html" download>
+            <a href="assets/Homework-I.html" class="ref-btn ref-btn-html" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               HTML
             </a>
@@ -909,11 +963,11 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Homework II &mdash; Multiple Regression</div>
           <div class="ref-desc">Carseats dataset. Multiple regression with a Price &times; ShelveLoc interaction term, train/test evaluation, and assumption diagnostics.</div>
           <div class="ref-links">
-            <a href="assets/Homework-II.pdf" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/Homework-II.pdf" class="ref-btn ref-btn-pdf" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               PDF
             </a>
-            <a href="assets/Homework-II.html" class="ref-btn ref-btn-html" download>
+            <a href="assets/Homework-II.html" class="ref-btn ref-btn-html" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               HTML
             </a>
@@ -928,11 +982,11 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Homework III &mdash; Backward Selection</div>
           <div class="ref-desc">Auto dataset. Manual p-value-based backward elimination predicting acceleration. Reusable <code>report_step()</code> function, VIF/multicollinearity analysis.</div>
           <div class="ref-links">
-            <a href="assets/Homework-III.pdf" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/Homework-III.pdf" class="ref-btn ref-btn-pdf" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               PDF
             </a>
-            <a href="assets/Homework-III.html" class="ref-btn ref-btn-html" download>
+            <a href="assets/Homework-III.html" class="ref-btn ref-btn-html" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               HTML
             </a>
@@ -947,11 +1001,11 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
           <div class="ref-title">Homework IV &mdash; Multinomial Logistic Regression</div>
           <div class="ref-desc">FiveThirtyEight nonvoters survey (n=5,836). Multinomial logistic regression for voter category. Model comparison with and without party affiliation, odds ratio interpretation.</div>
           <div class="ref-links">
-            <a href="assets/Homework-IV.pdf" class="ref-btn ref-btn-pdf" download>
+            <a href="assets/Homework-IV.pdf" class="ref-btn ref-btn-pdf" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9,15 12,18 15,15"/></svg>
               PDF
             </a>
-            <a href="assets/Homework-IV.html" class="ref-btn ref-btn-html" download>
+            <a href="assets/Homework-IV.html" class="ref-btn ref-btn-html" target="_blank" rel="noopener">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4,17 10,11 4,5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               HTML
             </a>
@@ -967,57 +1021,82 @@ report_step &lt;- <span class="ck">function</span>(model, step_title = <span cla
 
   </div><!-- /content-body -->
 
-  <footer>
-    Nishan Khanal &nbsp;&middot;&nbsp; STA 631 Statistical Modeling I &nbsp;&middot;&nbsp; GVSU Winter 2026
+<footer>
+    <div class="footer-main">
+      Nishan Khanal &nbsp;&middot;&nbsp; STA 631 Statistical Modeling I &nbsp;&middot;&nbsp; GVSU Winter 2026
+    </div>
+    <div class="footer-disclosure">
+      Some figures in this portfolio are redrawn in to match the visual aesthetic of this page; they reproduce the data, model outputs, and code logic from the original R submissions.
+      And, Claude assited me in buildingthis webpage.
+    </div>
   </footer>
 
-</div><!-- /content -->
-
 <script>
-  // ── Sidebar active link tracking
-  const sections  = document.querySelectorAll('section[id]');
-  const navLinks  = document.querySelectorAll('.sidebar-nav a');
+  // ── Active link tracking (top nav + dropdown items)
+  const sections = document.querySelectorAll('section[id]');
+  const allLinks = document.querySelectorAll('.nav-link, .nav-dropdown-menu a, #mobile-menu a');
+  const loToggle = document.getElementById('loToggle');
+  const loDropdown = document.getElementById('loDropdown');
+  const loMenu = document.getElementById('loMenu');
+
+  const objIds = new Set(['obj1','obj2','obj3','obj4','obj5']);
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.id;
-        navLinks.forEach(a => {
+        allLinks.forEach(a => {
           a.classList.toggle('active', a.getAttribute('href') === '#' + id);
         });
+        // If an LO section is active, also highlight the dropdown toggle
+        loToggle.style.color = objIds.has(id)
+          ? 'var(--paper)' : '';
+        loToggle.style.borderBottomColor = objIds.has(id)
+          ? 'var(--accent)' : '';
       }
     });
   }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
 
   sections.forEach(s => observer.observe(s));
 
-  // ── Mobile hamburger
-  const hamburger = document.getElementById('hamburger');
-  const sidebar   = document.getElementById('sidebar');
-  const overlay   = document.getElementById('sidebar-overlay');
+  // ── Dropdown toggle
+  loToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = loDropdown.classList.toggle('open');
+    loToggle.setAttribute('aria-expanded', open);
+  });
+  // Close dropdown on outside click
+  document.addEventListener('click', () => {
+    loDropdown.classList.remove('open');
+    loToggle.setAttribute('aria-expanded', false);
+  });
+  loMenu.addEventListener('click', () => {
+    loDropdown.classList.remove('open');
+  });
 
-  function openSidebar()  {
-    sidebar.classList.add('open');
-    overlay.classList.add('visible');
+  // ── Mobile menu
+  const hamburger    = document.getElementById('hamburger');
+  const mobileMenu   = document.getElementById('mobile-menu');
+  const overlay      = document.getElementById('overlay');
+
+  function openMenu()  {
+    mobileMenu.classList.add('open');
+    overlay.classList.add('open');
     hamburger.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
-  function closeSidebar() {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('visible');
+  function closeMenu() {
+    mobileMenu.classList.remove('open');
+    overlay.classList.remove('open');
     hamburger.classList.remove('open');
     document.body.style.overflow = '';
   }
 
-  hamburger.addEventListener('click', () => {
-    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
-  });
-  overlay.addEventListener('click', closeSidebar);
-
-  // Close sidebar on nav link click (mobile)
-  navLinks.forEach(a => a.addEventListener('click', () => {
-    if (window.innerWidth <= 768) closeSidebar();
-  }));
+  hamburger.addEventListener('click', () =>
+    mobileMenu.classList.contains('open') ? closeMenu() : openMenu()
+  );
+  overlay.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 </script>
 
 </body>
